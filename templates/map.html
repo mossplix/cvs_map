@@ -1,0 +1,117 @@
+{% extends "base_template.html" %}
+
+{% block title %}Mapping{% endblock %}
+
+{% block page_stylesheets %}
+<link rel="stylesheet" href="/Media/jquery-ui/css/jquery-ui.css" type="text/css" media="screen" charset="utf-8">
+<link rel="stylesheet" href="/Media/css/ui.slider.extras.css" type="text/css" media="screen" charset="utf-8">
+<link rel="stylesheet" href="/Media/css/map.css" type="text/css" media="screen" charset="utf-8">
+
+
+{% endblock %}
+{% block javascripts %}
+<script type="text/javascript" src="/Media/jquery-ui/js/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/Media/js/map.js"></script>
+ <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=true_or_false&amp;key=ABQIAAAAYimH_excdTjwGjM6LcP-DhTwM0brOpm-All5BF6PoaKBxRWWERT9OyCpc3hGVZ8kB3Z6S8RK5WKM1g" type="text/javascript"></script>
+<script type="text/javascript" src="/Media/js/selectToUISlider.jQuery.js"></script>
+<script type="text/javascript">
+var layerContainer = $('#ol');
+var map_urls={{Map_urls}};
+var minLat={{minLat}};
+var maxLat={{maxLat}};
+var minLon={{minLon}};
+var maxLon={{maxLon}};
+var layerContainer;
+
+function addToMap(){
+	$('#loading').removeClass('hidden');
+	map.clearOverlays();
+	layerContainer.find('input:checked').each(function (){
+
+		var key=$(this).attr('name');
+		if (key && map_urls[key] ){
+		
+
+			var url=map_urls[key] + "?start="+start_value+"&end="+end_value+"&bbox="+bbox+"&zoom="+current_zoom;
+			$.ajax({
+				  type:"GET",
+				  url:url,
+				  dataType:"json",
+				  success: function (data) {
+				    $.each(data, function(key,value){
+
+				    	addmarker(value['longitude'],value['latitude'],value['name'],value['icon'],value['name']);
+					    
+				     
+				    });
+				    
+				  }
+				});
+							
+			
+
+
+		}
+
+
+	}
+
+			);
+	$('#loading').addClass('hidden');
+
+}
+$(document).ready( function() {
+
+
+layerContainer = $('#ol');
+$.each( map_urls, function( key, val ) {
+    layerContainer.append('<li class="fg-button ui-state-default" style="border-bottom:1px solid #ffffff;"><input type="checkbox" name="'+key+'"></input><a href="#" ><button class="fg-button ui-state-default">'+key+'</button></a></li>')});
+
+
+
+layerContainer.find('input').click(addToMap);
+
+});
+</script>
+
+
+{% endblock %}
+
+{% block content %}
+<div style="margin-bottom:29px;">
+
+<h1>Mapping</h1>
+
+<p class="help">
+  Displays Map of Locations in the system.
+</p>
+<div id="map"style="float:left;width:700px;height:400px;border:1px solid #1ebfd2;">
+
+
+</div>
+<div id="loading" class="hidden" style="z-index:7890;width:220px;height:17px;position:absolute;top:250px;left:250px;">
+<img src="/Media/img/loading.gif" border="0"></img>
+</div>
+
+<div id="overlay" style="width:200px;height:400px;border:1px solid #1ebfd2;float:right;margin-right:40px;">
+<ul id="ol">
+
+</ul>
+
+</div>
+
+
+
+
+ <div style="clear:both; ">
+ <form action="#">
+		
+		
+		
+		{{slider_ranges}}
+	</form>
+ 
+ </div>
+</div>
+ {% endblock %}
+ 
