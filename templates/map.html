@@ -25,7 +25,11 @@ var maxLon={{maxLon}};
 var maxvalue;
 var layerContainer;
 
-
+/*function to add layers to the map. it checks all the layers for any wih a checkbox clicked and 
+ * 
+ *does a corresponding get request  for the associated data from the server 
+ * 
+ */                          
 function addToMap(){
 	
 	map.clearOverlays();
@@ -49,6 +53,7 @@ function addToMap(){
 				  maxvalue=data['maxvalue'];
 				    $.each(data, function(key,value){
 					    var ty=new String(value['type']);
+					    
 					    addmarker(value['longitude'],value['latitude'],value['name'],value['icon'],value['description']);
 				    	if( (value['longitude'] != "undefined") && (value['latitude'] != "undefined") && (value['longitude'] != "None") && (value['latitude'] != "None")) {
 					    var d=parseFloat(value['data']/maxvalue);

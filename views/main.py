@@ -232,7 +232,7 @@ def epi_kind(request,kind,start=None,end=None):
                 epi['ts']=str(er[0].report.source.time)
                 epi['url']=""
                 if kind in MAP_TYPES.keys():
-                    epi['icon']="/Media/img/army.png"
+                    epi['icon']="/Media/img/"+MAP_TYPES[kind][0]
                     epi['color']=MAP_TYPES[kind][1]
                 else:
                     epi['icon']="/marker/25/orange/%s/marker.png"%kind
