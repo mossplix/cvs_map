@@ -1,0 +1,11 @@
+Metadata-Version: 1.0
+Name: cvs-mapping
+Version: 1.0dev
+Summary: A mapping application for rapidsms
+Home-page: UNKNOWN
+Author: Mugisha Moses
+Author-email: mossplix@gmail.com
+License: BSD
+Description: UNKNOWN
+Keywords: django map
+Platform: UNKNOWN

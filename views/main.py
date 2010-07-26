@@ -222,13 +222,13 @@ def epi_kind(request,kind,start=None,end=None):
                 normalized_value=sum/count
                 if normalized_value>maxvalue:
                     maxvalue=normalized_value
-                epi['name']= sum
+                epi['name']= str(er[0].report.source.connection.user.reporter.healthreporter.facility.name)
                 
                 epi['latitude']=str(er[0].report.source.connection.user.reporter.healthreporter.facility.latitude)
                 epi['longitude']=str(er[0].report.source.connection.user.reporter.healthreporter.facility.longitude)
                 epi['type']=kind
                 epi['data']=normalized_value
-                epi['description']=""
+                epi['description']="<p>total number of cases: %s</p><p>number of reports: %s</p>"%(sum,count)
                 epi['ts']=str(er[0].report.source.time)
                 epi['url']=""
                 if kind in MAP_TYPES.keys():

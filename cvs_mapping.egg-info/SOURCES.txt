@@ -1,0 +1,7 @@
+README.txt
+setup.py
+cvs_mapping.egg-info/PKG-INFO
+cvs_mapping.egg-info/SOURCES.txt
+cvs_mapping.egg-info/dependency_links.txt
+cvs_mapping.egg-info/requires.txt
+cvs_mapping.egg-info/top_level.txt

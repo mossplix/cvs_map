@@ -77,13 +77,14 @@ function addmarker(x,y,title,icon,description) {
     points.push(point);
     
 	var mIcon  = new GIcon(G_DEFAULT_ICON, icon);
+	
 	mIcon.iconSize = new GSize(22,35);
 	mIcon.shadowSize=new GSize(0,0);
     var marker = new GMarker(point,mIcon);
     map.addOverlay(marker);
     GEvent.addListener(marker, 'click',
     	    function() {
-    	        marker.openInfoWindowHtml('<p class="help">'+title+'</h1>'+'<p>'+description+'</p>'+x+y);
+    	        marker.openInfoWindowHtml('<p class="help">'+title+'</h1>'+'<p>'+description+'</p>');
     	    });
 
     markers.push(marker);
