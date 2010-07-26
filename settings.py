@@ -3,12 +3,56 @@
 start_date="2009-06-01"
 end_date="2010-08-01"
 ####
-##a tuple of layers and their particular handlers
-#from mapping.views.main import health_facilities
-#layers=(("HealthCenters"))
 
-MAP_URLS={'health facilities':'/health_facilities/',
-          'epidemological diseases':'/epi'}
+
+
+MAP_URLS=(('Health Facilities','/health_facilities/'),
+          ('Deaths','/deaths'),
+          ('Births','/births'),
+          ('Malnutrition','/malnutrition'),
+          ('Malaria','/epi/ma'),
+          ('Measles','/epi/me'),
+          ('Dysentry','/epi/bd'),
+          ('Animal Bites','/epi/ab'),
+          ('Polio','/epi/af'),
+          ('Yellow Fever','/epi/yf'),
+          ('Cholera','/epi/ch'),
+          ('Tuberclosis','/epi/tb'),
+          ('Guinea Worm','/epi/gw'),
+          ('Meningitis','/epi/mg'),
+          ('Neonatal Tetanus','/epi/nt'),
+          ('Plague','/epi/pl'),
+          ('Rabies','/epi/rb'),
+            
+          )
+
+MAP_TYPES={
+           'facility':['army.png','#14740a'],
+           'deaths':['black.png','#121703'],
+           'births':['white.png','#ffffff'],
+           'Malnutrition':['yellow.png','#dfea28'],
+           'ma':['green.png','#2dea28'],
+           'me':['pinky.png','#c160b7'],
+           'bd':['br.png','#ff0000'],
+           'ab':['white.png','#ffffff'],
+           'af':['green.png','#2dea28'],
+           'yf':['blue.png','#28442e'],
+           'ch':['red.png','#8b252a'],
+           'tb':['orange.png','#b75600'],
+           'gw':['rl.png','#8a737d'],
+           'mg':['navy.png','#00052f'],
+           'nt':['lime.png','#e8e0d9'],
+           'pl':['dbrown.png','#663300'],
+           'rb':['brown.png','#cc9933'],
+           'ma':['cy.png','#9999ff'],
+           
+           
+           
+            }
+#from djangosms.stats.models import ObservationKind
+#observation_kinds=ObservationKind.objects.filter(slug__startswith="epidemiological_observation").distinct().values('slug','name')
+#for kind in observation_kinds:
+#    MAP_URLS[(kind['name'].rsplit(" ")[-1])]="/epi/%s" %(kind['slug'].rsplit("_")[-1])
 
 #map bounding box
 min_lat="31.19800"

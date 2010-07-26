@@ -17,7 +17,8 @@ var bbox;
 var current_zoom;
 //function to draw simple map
 function init() {
-	$('#loading').removeClass('hidden');
+	
+	
 
     map = new GMap2(document.getElementById("map"));
     map.addControl(new GLargeMapControl());
@@ -28,7 +29,7 @@ function init() {
     //map.setCenter(new GLatLng(centerLatitude, centerLongitude), startZoom);
     var gicons = [];
    
-    $('#loading').addClass('hidden');
+    
     
 }
 window.onload = init;
@@ -46,25 +47,50 @@ function movemap(x,y) {
     map.addOverlay(marker);
 }
 
+function addGraph(data,x,y,color){
+	//map.clearOverlays();
+	var d=map.getBounds().toSpan();
+	var height=d.lng();
+	var width=d.lat();
+	var maxsize=0.9;
+	var pointpair = [];
+	var increment = (parseFloat(height)/10.0)/100;
+	
+	var volume = parseInt((parseFloat(data)*100)/maxsize);
+	pointpair.push(new GPoint(parseFloat(x),parseFloat(y)));
+	pointpair.push(new GPoint(parseFloat(x+increment),parseFloat(y+increment)));
+	var line = new GPolyline(pointpair,color,volume);
+	
+	//addmarker(x,y,"test","/Media/img/yellow.png","description");
+	map.addOverlay(line);
+
+
+	
+	
+	
+	
+	
+}
 function addmarker(x,y,title,icon,description) {
+	
     var point = new GPoint(parseFloat(x),parseFloat(y));
     points.push(point);
     
 	var mIcon  = new GIcon(G_DEFAULT_ICON, icon);
-	mIcon.iconSize = new GSize(25,25);
+	mIcon.iconSize = new GSize(22,35);
 	mIcon.shadowSize=new GSize(0,0);
     var marker = new GMarker(point,mIcon);
     map.addOverlay(marker);
     GEvent.addListener(marker, 'click',
     	    function() {
-    	        marker.openInfoWindowHtml(description);
+    	        marker.openInfoWindowHtml('<p class="help">'+title+'</h1>'+'<p>'+description+'</p>'+x+y);
     	    });
 
     markers.push(marker);
     
     titles.push(title);
     
-    
+   
    
 }   
 

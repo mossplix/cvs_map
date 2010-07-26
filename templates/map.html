@@ -17,47 +17,71 @@
 <script type="text/javascript">
 var layerContainer = $('#ol');
 var map_urls={{Map_urls}};
+var map_types={{map_types}};
 var minLat={{minLat}};
 var maxLat={{maxLat}};
 var minLon={{minLon}};
 var maxLon={{maxLon}};
+var maxvalue;
 var layerContainer;
 
+
 function addToMap(){
-	$('#loading').removeClass('hidden');
+	
 	map.clearOverlays();
 	layerContainer.find('input:checked').each(function (){
+		document.getElementById('loading').setAttribute("class", "show");
 
 		var key=$(this).attr('name');
-		if (key && map_urls[key] ){
+		if (key && map_urls[key][1] ){
+		 maxLat= map.getBounds().getNorthEast().lat();
+		maxLon=map.getBounds().getNorthEast().lng();
+		minLat=map.getBounds().getSouthWest().lat();
+		minLon=map.getBounds().getSouthWest().lng();
 		
 
-			var url=map_urls[key] + "?start="+start_value+"&end="+end_value+"&bbox="+bbox+"&zoom="+current_zoom;
+			var url=map_urls[key][1] + "?start="+start_value+"&end="+end_value+"&maxLat="+ maxLat + "&maxLon=" +maxLon +"&minLat="+ minLat + "&minLon=" + minLon;
 			$.ajax({
 				  type:"GET",
 				  url:url,
 				  dataType:"json",
 				  success: function (data) {
+				  maxvalue=data['maxvalue'];
 				    $.each(data, function(key,value){
-
-				    	addmarker(value['longitude'],value['latitude'],value['name'],value['icon'],value['name']);
+					    var ty=new String(value['type']);
+					    addmarker(value['longitude'],value['latitude'],value['name'],value['icon'],value['description']);
+				    	if( (value['longitude'] != "undefined") && (value['latitude'] != "undefined") && (value['longitude'] != "None") && (value['latitude'] != "None")) {
+					    var d=parseFloat(value['data']/maxvalue);
+					    if( ty != "undefined"){
+				    	addGraph(d,parseFloat(value['longitude']),parseFloat(value['latitude']),value['color']);
+					    }
+						//addGraph(1.0909090909090908 ,33.311253726100 ,2.760327315770  ,"#9999ff");
+				    	
+				    	
+				    	}
 					    
 				     
 				    });
+				    document.getElementById('loading').setAttribute("class", "hidden");
 				    
 				  }
 				});
+			
 							
 			
 
 
 		}
+		
 
 
 	}
 
 			);
-	$('#loading').addClass('hidden');
+
+
+	
+	
 
 }
 $(document).ready( function() {
@@ -65,11 +89,12 @@ $(document).ready( function() {
 
 layerContainer = $('#ol');
 $.each( map_urls, function( key, val ) {
-    layerContainer.append('<li class="fg-button ui-state-default" style="border-bottom:1px solid #ffffff;"><input type="checkbox" name="'+key+'"></input><a href="#" ><button class="fg-button ui-state-default">'+key+'</button></a></li>')});
+    layerContainer.append('<li class="fg-button ui-state-default" style="border-bottom:1px solid #ffffff;"><input type="checkbox" name="'+ key+'"></input><a href="#" ><button class="fg-button ui-state-default">'+val[0]+'</button></a></li>')});
 
 
 
 layerContainer.find('input').click(addToMap);
+
 
 });
 </script>
@@ -84,6 +109,9 @@ layerContainer.find('input').click(addToMap);
 
 <p class="help">
   Displays Map of Locations in the system.
+</p>
+<p class="help" style="float:right;margin-right:150px;margin-top:-25px;">
+  layers
 </p>
 <div id="map"style="float:left;width:700px;height:400px;border:1px solid #1ebfd2;">
 
@@ -103,7 +131,8 @@ layerContainer.find('input').click(addToMap);
 
 
 
- <div style="clear:both; ">
+ <div style="clear:both; margin-top:250px;width:80%;">
+ <p class="help">Filter  By Date:</p>
  <form action="#">
 		
 		
