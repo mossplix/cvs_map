@@ -1,4 +1,4 @@
-##minimum date and maximum  date for the slider
+ ##minimum date and maximum  date for the slider
 ##in the form '%Y-%m-%d'
 start_date="2009-06-01"
 end_date="2010-08-01"
@@ -6,7 +6,7 @@ end_date="2010-08-01"
 
 
 
-MAP_URLS=(('Health Facilities','/health_facilities/'),
+MAP_URLS=(('Health Facilities','/health_facilities'),
           ('Deaths','/deaths'),
           ('Births','/births'),
           ('Malnutrition','/malnutrition'),
@@ -25,12 +25,12 @@ MAP_URLS=(('Health Facilities','/health_facilities/'),
           ('Rabies','/epi/rb'),
             
           )
-
+##map types
 MAP_TYPES={
-           'facility':['army.png','#14740a'],
+           'health_facilities':['army.png','#14740a'],
            'deaths':['black.png','#121703'],
            'births':['white.png','#ffffff'],
-           'Malnutrition':['yellow.png','#dfea28'],
+           'malnutrition':['yellow.png','#dfea28'],
            'ma':['green.png','#2dea28'],
            'me':['pinky.png','#c160b7'],
            'bd':['br.png','#ff0000'],

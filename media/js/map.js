@@ -77,9 +77,19 @@ function addmarker(x,y,title,icon,description) {
     points.push(point);
     
 	var mIcon  = new GIcon(G_DEFAULT_ICON, icon);
+	var e=icon.split("/");
+	var ending=e[e.length-1];
+	if (ending=="marker.png"){
+		mIcon.iconSize = new GSize(25,25);
+		mIcon.shadowSize=new GSize(0,0);
+		
+	}
+	else{
+	
 	
 	mIcon.iconSize = new GSize(22,35);
 	mIcon.shadowSize=new GSize(0,0);
+	}
     var marker = new GMarker(point,mIcon);
     map.addOverlay(marker);
     GEvent.addListener(marker, 'click',

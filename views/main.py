@@ -105,7 +105,8 @@ def deaths(request):
             death['description']="<p>%s</p> "%(" ".join(str(dr.source).split(",")[1:4]))
             death['timestamp']=str(dr.source.time)
             death['absolute_url']=""
-            death['icon']="/marker/25/black/Dth/marker.png"
+            death['deaths']="/Media/img/"+MAP_TYPES['deaths'][0]
+            death['deaths']=MAP_TYPES['deaths'][1]
             death_reports[n]=death
             n=n+1
             
@@ -140,7 +141,8 @@ def births(request):
         br['timestamp']=str(btrt.source.time)
         br['description']=""
         br['absolute_url']=""
-        br['icon']="/marker/25/orange/Bth/marker.png"
+        br['icon']="/Media/img/"+MAP_TYPES['births'][0]
+        br['color']=MAP_TYPES['births'][1]
         breports_dict[str(btrt.patient.name)]=br
     return JsonResponse(breports_dict)
 def malnutrition(request,start_date=None,end_date=None):
@@ -175,7 +177,8 @@ def malnutrition(request,start_date=None,end_date=None):
             mr['description']="<p>%s</p> "%(" ".join(str(mc.source).split(",")[1:4]))
             mr['ts']=str(mc.source.time)
             mr['url']=""
-            mr['icon']="/Media/img/pin.png"
+            mr['icon']="/Media/img/"+MAP_TYPES['malnutrition'][0]
+            mr['color']=MAP_TYPES['malnutrition'][1]
             mauc_reports[str(mc.patient.name)]=mr
         except:
             continue
