@@ -77,6 +77,7 @@ function addmarker(x,y,title,icon,description) {
     points.push(point);
     
 	var mIcon  = new GIcon(G_DEFAULT_ICON, icon);
+	
 	var e=icon.split("/");
 	var ending=e[e.length-1];
 	if (ending=="marker.png"){

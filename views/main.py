@@ -105,8 +105,8 @@ def deaths(request):
             death['description']="<p>%s</p> "%(" ".join(str(dr.source).split(",")[1:4]))
             death['timestamp']=str(dr.source.time)
             death['absolute_url']=""
-            death['deaths']="/Media/img/"+MAP_TYPES['deaths'][0]
-            death['deaths']=MAP_TYPES['deaths'][1]
+            death['icon']="/Media/img/"+MAP_TYPES['deaths'][0]
+            death['color']=MAP_TYPES['deaths'][1]
             death_reports[n]=death
             n=n+1
             
