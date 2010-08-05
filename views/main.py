@@ -37,8 +37,7 @@ draw marker  given color,width and opacity
     return response        
 def health_facilities(request,limit=100,start_date=None,end_date=None):
     from cvs.models import Facility
-    facility_options={"HCI":"Hc1","HCII":"Hc2","HCIII":"Hc3","HCIV":"Hc4","Ministry":"Min",\
-                      "District Health Office":"DHO","Hospital":"Hos"}
+    
     
     facility_dict={}
     facilities=Facility.objects.all().order_by('name')
