@@ -4,7 +4,7 @@ import datetime
 from django.utils.safestring import mark_safe
 from django.template import RequestContext
 from django.http import HttpResponse
-import simplejson
+from django.utils import simplejson
 
 month_options=((),(1,"Jan"),(2,"Feb"),(3,"Mar"),(4,"Apr"),(5,"May"),(6,"Jun"),(7,"Jul"),(8,"Aug"),(9,"Nov"),(10,"oct"),(11,"Nov"),(12,"Dec"))
 class MappableObjectMeta(type):
