@@ -51,8 +51,9 @@ def health_facilities(request,limit=100,start_date=None,end_date=None):
         fac['type']=facility.kind.name
         fac['timestamp']=""
         fac['absolute_url']=""
-        fac['description']=""
-        fac['icon']="/marker/25/"+facility_options[str(facility.kind.name)]+"/marker.png"
+        fac['description']=facility.kind.name
+        fac['icon']="/Media/img/"+MAP_TYPES['health_facilities'][0]
+        fac['color']=MAP_TYPES['health_facilities'][1]
         facility_dict[str(facility.name)]=fac
     return JsonResponse(facility_dict)
 
