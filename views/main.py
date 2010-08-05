@@ -261,7 +261,7 @@ def map(request):
     map_types=mark_safe(simplejson.dumps(MAP_TYPES))
     minLon,maxLon,minLat,maxLat=mark_safe(min_lat),mark_safe(max_lat),mark_safe(min_lon),mark_safe(max_lon)
     slider_ranges=date_range(start_date,end_date)
-    return render_to_response("map.html",locals())
+    return render_to_response("map.html",locals(),context_instance=RequestContext(request))
 
 
 
