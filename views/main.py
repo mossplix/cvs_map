@@ -88,27 +88,28 @@ def deaths(request):
         start_date,end_date=None,None
     if start_date==None or end_date==None:
         
-        Dreports=Report.objects.filter(kind__slug='death').order_by('source__time')
+        #Dreports=Report.objects.filter(kind__slug='death').order_by('source__time')
+        Dreports=DeathReport.objects.order_by('message__time').filter(valid=True)
     else:
         start_date=format_date(str(start_date)) 
         end_date=format_date(str(end_date),start=False)   
-        Dreports=Report.objects.filter(kind__slug='death').filter(source__time__range=(start_date,end_date)).order_by('source__time')
-    n=1
+        Dreports=DeathReport.objects.filter(valid=True).order_by('message__time').filter(message__time__range=(start_date,end_date))
+        
     for dr in Dreports:
         try:
             death={}
             
-            death['name']=""
-            death['latitude']=str(dr.source.connection.user.reporter.healthreporter.facility.latitude)
-            death['longitude']=str(dr.source.connection.user.reporter.healthreporter.facility.longitude)
+            death['name']=str(dr.patient.name)
+            death['latitude']=str(dr.reporter.healthreporter.facility.latitude)
+            death['longitude']=str(dr.reporter.healthreporter.facility.longitude)
             death['type']="EPI"
-            death['description']="<p>%s</p> "%(" ".join(str(dr.source).split(",")[1:4]))
-            death['timestamp']=str(dr.source.time)
+            death['description']="<p>%s %s</p> "%(str(dr.patient.name), str(dr.patient.age) )
+            death['timestamp']=str(dr.message.time)
             death['absolute_url']=""
             death['icon']="/Media/img/"+MAP_TYPES['deaths'][0]
             death['color']=MAP_TYPES['deaths'][1]
-            death_reports[n]=death
-            n=n+1
+            death_reports[str(dr.patient.name)]=death
+           
             
         except:
             continue
@@ -127,23 +128,26 @@ def births(request):
     if str(start_date)=="undefined" or str(end_date)=="undefined":
         start_date,end_date=None,None
     if start_date==None or end_date==None:
-        birth_reports=BirthReport.objects.all().order_by('source__time')
+        birth_reports=NewBirthReport.objects.filter(valid=True).order_by('message__time')
     else:
         start_date=format_date(str(start_date)) 
         end_date=format_date(str(end_date),start=False)   
-        birth_reports=BirthReport.objects.all().filter(source__time__range=(start_date,end_date)).order_by('source__time')
+        birth_reports=NewBirthReport.objects.filter(valid=True).filter(message__time__range=(start_date,end_date)).order_by('message__time')
     for btrt in birth_reports:
-        br={}
-        br['name']=str(btrt.patient.name)
-        br['latitude']=str(btrt.patient.last_reported_on_by.reporter.healthreporter.facility.latitude)
-        br['longitude']=str(btrt.patient.last_reported_on_by.reporter.healthreporter.facility.longitude)
-        br['type']="Birth"
-        br['timestamp']=str(btrt.source.time)
-        br['description']=""
-        br['absolute_url']=""
-        br['icon']="/Media/img/"+MAP_TYPES['births'][0]
-        br['color']=MAP_TYPES['births'][1]
-        breports_dict[str(btrt.patient.name)]=br
+        try:
+            br={}
+            br['latitude']=str(btrt.reporter.healthreporter.facility.latitude)
+            br['longitude']=str(btrt.reporter.healthreporter.facility.longitude)    
+            br['name']=str(btrt.patient.name)    
+            br['type']="Birth"
+            br['timestamp']=str(btrt.message.time)
+            br['description']=str(btrt.patient.name) + "  age:"+str(btrt.patient.age) 
+            br['absolute_url']=""
+            br['icon']="/Media/img/"+MAP_TYPES['births'][0]
+            br['color']=MAP_TYPES['births'][1]
+            breports_dict[str(btrt.patient.name)]=br
+        except:
+            continue
     return JsonResponse(breports_dict)
 def malnutrition(request,start_date=None,end_date=None):
     try:
@@ -161,21 +165,21 @@ def malnutrition(request,start_date=None,end_date=None):
     if str(start_date)=="undefined" or str(end_date)=="undefined":
         start_date,end_date=None,None
     if start_date==None or end_date==None:
-        mauc=NutritionReport.objects.all().order_by('source__time')
+        mauc=MuacReport.objects.filter(valid=True).order_by('message__time')
         
     else:
         start_date=format_date(str(start_date)) 
         end_date=format_date(str(end_date),start=False)   
-        mauc=NutritionReport.objects.all().filter(source__time__range=(start_date,end_date)).order_by('source__time')
+        mauc=MuacReport.objects.filter(valid=True).filter(message__time__range=(start_date,end_date)).order_by('message__time')
     for mc in mauc:
         try:
             mr={}
             mr['name']=mc.patient.name
-            mr['latitude']=str(mc.patient.last_reported_on_by.reporter.healthreporter.facility.latitude)
-            mr['longitude']=str(mc.patient.last_reported_on_by.reporter.healthreporter.facility.longitude)
+            mr['latitude']=str(mc.reporter.healthreporter.facility.latitude)
+            mr['longitude']=str(mc.reporter.healthreporter.facility.longitude)
             mr['type']="Malnutrition"
-            mr['description']="<p>%s</p> "%(" ".join(str(mc.source).split(",")[1:4]))
-            mr['ts']=str(mc.source.time)
+            mr['description']="<p>%s</p> "%(" ".join(str(mc.message).split(",")[1:4]))
+            mr['ts']=str(mc.message.time)
             mr['url']=""
             mr['icon']="/Media/img/"+MAP_TYPES['malnutrition'][0]
             mr['color']=MAP_TYPES['malnutrition'][1]
@@ -187,7 +191,7 @@ def malnutrition(request,start_date=None,end_date=None):
 
 def epi_kind(request,kind,start=None,end=None):
     from django.db.models import Sum,Count
-    kind=str(kind)
+    KIND=str(kind)
     try:
         start_date=request.GET.get('start', None)
         end_date=request.GET.get('end',None)
@@ -198,25 +202,29 @@ def epi_kind(request,kind,start=None,end=None):
         
         
     #Month=month_options[month][1]
-    KIND="epidemiological_observations_%s"%kind
+   
+    
     epi_obs={}
     if str(start_date)=="undefined" or str(end_date)=="undefined":
         start_date,end_date=None,None
     if start_date==None or end_date==None:
         
-        main_query=Observation.objects.filter(kind__slug=KIND).order_by('report__source__time')
+        main_query=EpiReport.objects.filter(valid=True,disease=KIND).order_by('message__time')
         
     else:
         start_date=format_date(str(start_date)) 
         end_date=format_date(str(end_date),start=False)   
-        main_query=Observation.objects.filter(kind__slug=KIND).filter(report__source__time__range=(start_date,end_date)).order_by('report__source__time')
+        main_query=EpiReport.objects.filter(valid=True,disease=KIND).filter(message__time__range=(start_date,end_date)).order_by('message__time')
     facilities=Facility.objects.all()
     n=1
     maxvalue=0
     for facility  in facilities:
         try:
-            er = main_query.filter(report__source__connection__user__reporter__healthreporter__facility=facility)
+            er = main_query.filter(reporter__healthreporter__facility=facility)
+            
+            
             if len(er) != 0:
+                
             
             
                 epi={}
@@ -225,14 +233,14 @@ def epi_kind(request,kind,start=None,end=None):
                 normalized_value=sum/count
                 if normalized_value>maxvalue:
                     maxvalue=normalized_value
-                epi['name']= str(er[0].report.source.connection.user.reporter.healthreporter.facility.name)
+                epi['name']= str(er[0].reporter.healthreporter.facility.name)
                 
-                epi['latitude']=str(er[0].report.source.connection.user.reporter.healthreporter.facility.latitude)
-                epi['longitude']=str(er[0].report.source.connection.user.reporter.healthreporter.facility.longitude)
+                epi['latitude']=str(er[0].reporter.healthreporter.facility.latitude)
+                epi['longitude']=str(er[0].reporter.healthreporter.facility.longitude)
                 epi['type']=kind
                 epi['data']=normalized_value
                 epi['description']="<p>total number of cases: %s</p><p>number of reports: %s</p>"%(sum,count)
-                epi['ts']=str(er[0].report.source.time)
+                epi['ts']=str(er[0].message.time)
                 epi['url']=""
                 if kind in MAP_TYPES.keys():
                     epi['icon']="/Media/img/"+MAP_TYPES[kind][0]
