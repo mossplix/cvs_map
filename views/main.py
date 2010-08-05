@@ -21,20 +21,20 @@ class JsonResponse(HttpResponse):
 
 
 
-def marker(request,radius=50,color='#1ebfd2',opacity=1.0,text=""):
-    """
-draw marker  given color,width and opacity
-"""
-    radius = int(radius)
-    stroke_width = 1
-    # Defaults
-    fill_color = color
-    stroke_color = '#1f9ecd'
-    opacity = int(opacity)
-    img=make_marker(radius,fill_color,stroke_color,stroke_width,opacity,text)
-    response=HttpResponse(content_type='image/png')
-    img.save(response, 'PNG')
-    return response        
+#def marker(request,radius=50,color='#1ebfd2',opacity=1.0,text=""):
+#    """
+#draw marker  given color,width and opacity
+#"""
+#    radius = int(radius)
+#    stroke_width = 1
+#    # Defaults
+#    fill_color = color
+#    stroke_color = '#1f9ecd'
+#    opacity = int(opacity)
+#    img=make_marker(radius,fill_color,stroke_color,stroke_width,opacity,text)
+#    response=HttpResponse(content_type='image/png')
+#    img.save(response, 'PNG')
+#    return response        
 def health_facilities(request,limit=100,start_date=None,end_date=None):
     from cvs.models import Facility
     
