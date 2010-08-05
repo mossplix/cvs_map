@@ -59,3 +59,6 @@ min_lat="31.19800"
 max_lat="33.80176"
 min_lon="2.1444"
 max_lon="3.88875"
+
+##localhost:8080 key. you will probably need to get one for your host
+MAP_KEY="ABQIAAAAYimH_excdTjwGjM6LcP-DhTwM0brOpm-All5BF6PoaKBxRWWERT9OyCpc3hGVZ8kB3Z6S8RK5WKM1g"

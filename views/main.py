@@ -3,7 +3,7 @@ from django.template import RequestContext
 from django.http import HttpResponse
 from mapping.lib.utils import *
 from mapping.lib.marker import *
-from mapping.settings import start_date,end_date,MAP_URLS,min_lat,max_lat,min_lon,max_lon,MAP_TYPES
+from mapping.settings import start_date,end_date,MAP_URLS,min_lat,max_lat,min_lon,max_lon,MAP_TYPES,MAP_KEY
 from django.utils.safestring import mark_safe
 from django.utils import simplejson
 from djangosms.stats.models import *
@@ -256,6 +256,7 @@ def epi_kind(request,kind,start=None,end=None):
     return JsonResponse(epi_obs)
     
 def map(request):
+    map_key=MAP_KEY
     Map_urls=mark_safe(simplejson.dumps(MAP_URLS))
     map_types=mark_safe(simplejson.dumps(MAP_TYPES))
     minLon,maxLon,minLat,maxLat=mark_safe(min_lat),mark_safe(max_lat),mark_safe(min_lon),mark_safe(max_lon)
