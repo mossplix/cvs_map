@@ -115,6 +115,9 @@ $(function(){
 	//demo 3
 	$('select#start, select#end').selectToUISlider({
 		labels: 12,
+		 min: 1,
+         max: 10,
+
 		sliderOptions: { 
 		change:function(e, ui) { 
 		 start_value=$('select#start option').eq(ui.values[0]).text();

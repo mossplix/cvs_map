@@ -1,7 +1,7 @@
  ##minimum date and maximum  date for the slider
 ##in the form '%Y-%m-%d'
-start_date="2009-06-01"
-end_date="2010-08-01"
+start_date="2010-05-01"
+end_date="2011-01-01"
 ####
 
 
