@@ -15,27 +15,24 @@ var start_value;
 var end_value;
 var bbox;
 var current_zoom;
+var layers = []; 
+
+
 //function to draw simple map
 function init() {
 	
-	
+	map = new GMap2(document.getElementById("map"));
+	 map.addControl(new GLargeMapControl());
+     map.addControl(new GMapTypeControl());
 
-    map = new GMap2(document.getElementById("map"));
-    map.addControl(new GLargeMapControl());
+	
     var bounds = new GLatLngBounds; 
 	bounds.extend(new GLatLng(parseFloat(minLat), parseFloat(minLon))); 
 	bounds.extend(new GLatLng(parseFloat(maxLat), parseFloat(maxLon)));
 	map.setCenter(bounds.getCenter(), map.getBoundsZoomLevel(bounds)); 
-    //map.setCenter(new GLatLng(centerLatitude, centerLongitude), startZoom);
     var gicons = [];
-   
-    
-    
 }
 window.onload = init;
-
-
-
 function movemap(x,y) {
     if (marker)
     {
@@ -47,7 +44,7 @@ function movemap(x,y) {
     map.addOverlay(marker);
 }
 
-function addGraph(data,x,y,color){
+function addGraph(data,x,y,color,type){
 	//map.clearOverlays();
 	var d=map.getBounds().toSpan();
 	var height=d.lng();
@@ -61,27 +58,39 @@ function addGraph(data,x,y,color){
 	pointpair.push(new GPoint(parseFloat(x+increment),parseFloat(y+increment)));
 	var line = new GPolyline(pointpair,color,volume);
 	
-	//addmarker(x,y,"test","/Media/img/yellow.png","description");
+	if(layers[type])
+    {
+    layers[type].push(line);
+    }
+    else{
+    	layers[type]=[]
+    	layers[type].push(line);
+    	  	
+    }	
 	map.addOverlay(line);
-
-
+}
+function removeOverlays(type){
+	m_list=markers[type];
+	l_list=layers[type];
 	
-	
-	
-	
+	$.each(m_list, function(key,value){map.removeOverlay(value);});
+	$.each(l_list, function(key,value){map.removeOverlay(value);});
 	
 }
-function addmarker(x,y,title,icon,description) {
+
+
+function addmarker(x,y,title,icon,description,type) {
+	
 	
     var point = new GPoint(parseFloat(x),parseFloat(y));
     points.push(point);
     
 	var mIcon  = new GIcon(G_DEFAULT_ICON, icon);
 	
-	var e=icon.split("/");
+	var e=icon.split("|FF8888|");
 	var ending=e[e.length-1];
-	if (ending=="marker.png"){
-		mIcon.iconSize = new GSize(25,25);
+	if (ending=="FFF"){
+		mIcon.iconSize = new GSize(50,23);
 		mIcon.shadowSize=new GSize(0,0);
 		
 	}
@@ -97,17 +106,18 @@ function addmarker(x,y,title,icon,description) {
     	    function() {
     	        marker.openInfoWindowHtml('<p class="help">'+title+'</h1>'+'<p>'+description+'</p>');
     	    });
-
-    markers.push(marker);
+    if(markers[type])
+    {
+    markers[type].push(marker);
+    }
+    else{
+    	markers[type]=[]
+    	markers[type].push(marker);
+    	  	
+    }
     
-    titles.push(title);
-    
-   
-   
+    titles.push(title);    
 }   
-
-
-
 
 $(function(){
 	
@@ -115,9 +125,6 @@ $(function(){
 	//demo 3
 	$('select#start, select#end').selectToUISlider({
 		labels: 12,
-		 min: 1,
-         max: 10,
-
 		sliderOptions: { 
 		change:function(e, ui) { 
 		 start_value=$('select#start option').eq(ui.values[0]).text();
@@ -141,9 +148,3 @@ function fixToolTipColor(){
 		$(this).css('border-top', bWidth+' solid '+bColor);
 	});	
 }
-
-
-
-
-
-

@@ -14,6 +14,7 @@
 <script type="text/javascript" src="/Media/js/map.js"></script>
  <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key={{map_key}}" type="text/javascript"></script>
 <script type="text/javascript" src="/Media/js/selectToUISlider.jQuery.js"></script>
+<script type="text/javascript" src="/Media/jquery-ui/js/markermanager_packed.js"></script>
 <script type="text/javascript">
 var layerContainer = $('#ol');
 var map_urls={{Map_urls}};
@@ -22,6 +23,7 @@ var minLat={{minLat}};
 var maxLat={{maxLat}};
 var minLon={{minLon}};
 var maxLon={{maxLon}};
+var zoom;
 var maxvalue;
 var layerContainer;
 
@@ -44,6 +46,15 @@ var layerContainer;
 	 return color
 	 
 }
+ function getType(url){
+
+	 var z=url.split("/")
+	 var slug=z[z.length-1]
+	                 	
+	           	 
+	 return slug
+	 
+}
 
 /*function to add layers to the map. it checks all the layers for any wih a checkbox clicked and 
  * 
@@ -53,19 +64,32 @@ var layerContainer;
                          
 function addToMap(){
 	
-	map.clearOverlays();
+	//map.clearOverlays();
+	layerContainer.find('input:unchecked').each(function (){
+		var key=$(this).attr('name');
+		var slug=getType(map_urls[key][1]);
+		if(markers[slug])
+		{
+		removeOverlays(slug);
+		}
+
+	});
 	layerContainer.find('input:checked').each(function (){
 		document.getElementById('loading').setAttribute("class", "show");
-
 		var key=$(this).attr('name');
+		var slug=getType(map_urls[key][1]);
+		markers[slug]=[];
+
+		
+		
 		if (key && map_urls[key][1] ){
 		 maxLat= map.getBounds().getNorthEast().lat();
 		maxLon=map.getBounds().getNorthEast().lng();
 		minLat=map.getBounds().getSouthWest().lat();
 		minLon=map.getBounds().getSouthWest().lng();
-		
-
-			var url=map_urls[key][1] + "?start="+start_value+"&end="+end_value+"&maxLat="+ maxLat + "&maxLon=" +maxLon +"&minLat="+ minLat + "&minLon=" + minLon;
+		zoom=map.getZoom();
+			markers=[];
+			var url=map_urls[key][1] + "?start="+start_value+"&end="+end_value+"&maxLat="+ maxLat + "&maxLon=" +maxLon +"&minLat="+ minLat + "&minLon=" + minLon+"&zoom="+zoom;
 			$.ajax({
 				  type:"GET",
 				  url:url,
@@ -82,13 +106,12 @@ function addToMap(){
 					    
 					   
 				    	if( (value['longitude'] != "undefined") && (value['latitude'] != "undefined")&& (value['icon'] != undefined) && (value['longitude'] != "None") && (value['latitude'] != "None")) {
-				    		 addmarker(value['longitude'],value['latitude'],value['name'],value['icon'],value['description']);
+				    		 addmarker(value['longitude'],value['latitude'],value['name'],value['icon'],value['description'],value['type']);
 								
 							    var d=parseFloat(value['data']/maxvalue);
 					    if( ty != "undefined"){
-				    	addGraph(d,parseFloat(value['longitude']),parseFloat(value['latitude']),value['color']);
+				    	addGraph(d,parseFloat(value['longitude']),parseFloat(value['latitude']),value['color'],value['type']);
 					    }
-						//addGraph(1.0909090909090908 ,33.311253726100 ,2.760327315770  ,"#9999ff");
 				    	
 				    	
 				    	}
@@ -102,36 +125,31 @@ function addToMap(){
 				  }
 			  
 				});
-			
-							
-			
-
 
 		}
-		
-
 
 	}
 
 			);
-
-
-	
-	
-
 }
 $(document).ready( function() {
 
 
 layerContainer = $('#ol');
+
+
 $.each( map_urls, function( key, val ) {
 	
 	var color=getColor(val[1]);
     layerContainer.append('<li class="fg-button ui-state-default" style="border-bottom:1px solid #ffffff;"><input type="checkbox" name="'+ key+'"></input><a href="#" ><button class="fg-button ui-state-default">'+val[0]+'</button></a><span style="width:15px;height:15px;background-color:'+color+';float:right;margin-top:3px;margin-right:6px;"></span></li>')});
 
+var hc=$('input[name=0]');
+hc.attr('checked', true);
+hc.addClass('hidden');
 
 
 layerContainer.find('input').click(addToMap);
+
 
 
 });

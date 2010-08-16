@@ -20,7 +20,22 @@ class JsonResponse(HttpResponse):
             return(simplejson.dumps(self.original_obj))
 
 
-
+def geoCode(name):
+    
+    """
+    use geonames to geocode the locations
+    """
+    from xml.dom import minidom
+    import urllib
+    
+    url="http://ws.geonames.org/search?q=%s&maxRows=1&style=SHORT&lang=en&country=ug"%name
+    raw_data=urllib.urlopen(url).read()
+    xmldoc = minidom.parseString(raw_data)
+    lng=float(xmldoc.getElementsByTagName('lng')[0].childNodes[0].data)
+    lat=float(xmldoc.getElementsByTagName('lat')[0].childNodes[0].data)
+    return (lat,lng)
+    
+    
 #def marker(request,radius=50,color='#1ebfd2',opacity=1.0,text=""):
 #    """
 #draw marker  given color,width and opacity
@@ -34,26 +49,46 @@ class JsonResponse(HttpResponse):
 #    img=make_marker(radius,fill_color,stroke_color,stroke_width,opacity,text)
 #    response=HttpResponse(content_type='image/png')
 #    img.save(response, 'PNG')
-#    return response        
-def health_facilities(request,limit=100,start_date=None,end_date=None):
+#    return response  
+def getZoomFacilities(zoom):
+    """
+    get the facilities at a given zoom
+    """
+    if zoom<=8:
+        return ["Hospital"]
+    elif zoom ==9:
+        return ["Hospital","HCIV"]
+    elif zoom in [10,11]:
+        return ["Hospital","HCIV","HCIII"]
+    elif zoom >11:
+        return ["Hospital","HCIV","HCIII","HCII"]
+          
+def health_facilities(request):
     from cvs.models import Facility
+    try:
+        zoom=int(request.GET.get('zoom', 8))
     
+    except:
+        zoom=8
     
     facility_dict={}
-    facilities=Facility.objects.all().order_by('name')
+    facilities=Facility.objects.all().order_by('name').filter(kind__name__in=getZoomFacilities(zoom))
     for facility in facilities:
         
         fac={}
         fac['name']=facility.name
         fac['latitude']=str(facility.latitude)
         fac['longitude']=str(facility.longitude)
-        fac['type']=facility.kind.name
+        fac['type']="health_facilities"
         fac['timestamp']=""
         fac['absolute_url']=""
         fac['description']=facility.kind.name
-        fac['icon']="/Media/img/"+MAP_TYPES['health_facilities'][0]
+        fac['zoom']=zoom
+#        fac['icon']="/Media/img/"+MAP_TYPES['health_facilities'][0]
+        fac['icon']="http://chart.apis.google.com/chart?chst=d_simple_text_icon_below&chld=%s (%s)|12|14740A|medical|12|FF8888|FFF"%(facility.name,facility.kind.name)
         fac['color']=MAP_TYPES['health_facilities'][1]
         facility_dict[str(facility.name)]=fac
+        
     return JsonResponse(facility_dict)
 
     
@@ -94,25 +129,41 @@ def deaths(request):
         start_date=format_date(str(start_date)) 
         end_date=format_date(str(end_date),start=False)   
         Dreports=DeathReport.objects.filter(valid=True).order_by('message__time').filter(message__time__range=(start_date,end_date))
+    facilities=Facility.objects.all()
+    maxvalue=0
+    n=1
         
-    for dr in Dreports:
+   
+    for facility in facilities:
+        
+        
         try:
-            death={}
-            
-            death['name']=str(dr.patient.name)
-            death['latitude']=str(dr.reporter.healthreporter.facility.latitude)
-            death['longitude']=str(dr.reporter.healthreporter.facility.longitude)
-            death['type']="EPI"
-            death['description']="<p>%s %s</p> "%(str(dr.patient.name), str(dr.patient.age) )
-            death['timestamp']=str(dr.message.time)
-            death['absolute_url']=""
-            death['icon']="/Media/img/"+MAP_TYPES['deaths'][0]
-            death['color']=MAP_TYPES['deaths'][1]
-            death_reports[str(dr.patient.name)]=death
+            dr=Dreports.filter(reporter__healthreporter__facility=facility)
+            if len(dr) !=0:
+                death={}
+#                import pdb
+#                pdb.set_trace()
+                death['name']="Facility:" +str(dr[0].reporter.healthreporter.facility.name)
+                death['latitude']=str(dr[0].reporter.healthreporter.facility.latitude)
+                death['longitude']=str(dr[0].reporter.healthreporter.facility.longitude)
+                death['type']="deaths"
+                total_deaths=dr.count()
+                if total_deaths>maxvalue:
+                    maxvalue=total_deaths
+                death['data']=total_deaths
+                death['type']="deaths"
+                death['description']="total_deaths: "+str(total_deaths)
+                death['timestamp']=""
+                death['absolute_url']=""
+                death['icon']="/Media/img/"+MAP_TYPES['deaths'][0]
+                death['color']=MAP_TYPES['deaths'][1]
+                death_reports[n]=death
+                n=n+1
            
             
         except:
             continue
+    death_reports['maxvalue']=maxvalue
     return JsonResponse(death_reports)
 def births(request):
     try:
@@ -133,21 +184,33 @@ def births(request):
         start_date=format_date(str(start_date)) 
         end_date=format_date(str(end_date),start=False)   
         birth_reports=NewBirthReport.objects.filter(valid=True).filter(message__time__range=(start_date,end_date)).order_by('message__time')
-    for btrt in birth_reports:
+    facilities=Facility.objects.all()
+    maxvalue=0
+    n=1
+    
+    for facility in facilities:
         try:
+            btrt=birth_reports.filter(reporter__healthreporter__facility=facility)
             br={}
-            br['latitude']=str(btrt.reporter.healthreporter.facility.latitude)
-            br['longitude']=str(btrt.reporter.healthreporter.facility.longitude)    
-            br['name']=str(btrt.patient.name)    
-            br['type']="Birth"
-            br['timestamp']=str(btrt.message.time)
-            br['description']=str(btrt.patient.name) + "  age:"+str(btrt.patient.age) 
+            br['latitude']=str(btrt[0].reporter.healthreporter.facility.latitude)
+            br['longitude']=str(btrt[0].reporter.healthreporter.facility.longitude)   
+            br['name']="Facility: "+str(btrt[0].reporter.healthreporter.facility.name)    
+            br['type']="births"
+            birth_count=btrt.count()
+            if birth_count>maxvalue:
+                maxvalue=birth_count
+            br['data']=birth_count
+            br['timestamp']=""
+            br['description']="Birth Reports: "+str(birth_count)
             br['absolute_url']=""
             br['icon']="/Media/img/"+MAP_TYPES['births'][0]
             br['color']=MAP_TYPES['births'][1]
-            breports_dict[str(btrt.patient.name)]=br
+            breports_dict[n]=br
+            n=n+1
         except:
             continue
+    breports_dict['maxvalue']=maxvalue
+    
     return JsonResponse(breports_dict)
 def malnutrition(request,start_date=None,end_date=None):
     try:
@@ -171,21 +234,34 @@ def malnutrition(request,start_date=None,end_date=None):
         start_date=format_date(str(start_date)) 
         end_date=format_date(str(end_date),start=False)   
         mauc=MuacReport.objects.filter(valid=True).filter(message__time__range=(start_date,end_date)).order_by('message__time')
-    for mc in mauc:
+    facilities=Facility.objects.all()
+    maxvalue=0
+    n=1
+    #for mc in mauc:
+    for facility in facilities:
+        
         try:
+            mc=mauc.filter(reporter__healthreporter__facility=facility)
             mr={}
-            mr['name']=mc.patient.name
-            mr['latitude']=str(mc.reporter.healthreporter.facility.latitude)
-            mr['longitude']=str(mc.reporter.healthreporter.facility.longitude)
-            mr['type']="Malnutrition"
-            mr['description']="<p>%s</p> "%(" ".join(str(mc.message).split(",")[1:4]))
-            mr['ts']=str(mc.message.time)
+            mr['name']="Facility:"+str(mc[0].reporter.healthreporter.facility.name)
+            mr['latitude']=str(mc[0].reporter.healthreporter.facility.latitude)
+            mr['longitude']=str(mc[0].reporter.healthreporter.facility.longitude)
+            mr['type']="malnutrition"
+            
+            mauc_count=mc.count()
+            if mauc_count>maxvalue:
+                maxvalue=mauc_count
+            mr['data']=mauc_count
+            mr['description']="Number Of Cases:"+str(mauc_count)
+            mr['ts']=""
             mr['url']=""
             mr['icon']="/Media/img/"+MAP_TYPES['malnutrition'][0]
             mr['color']=MAP_TYPES['malnutrition'][1]
-            mauc_reports[str(mc.patient.name)]=mr
+            mauc_reports[n]=mr
+            n=n+1
         except:
             continue
+    mauc_reports['maxvalue']=maxvalue
     return JsonResponse(mauc_reports)
         
 
@@ -225,8 +301,6 @@ def epi_kind(request,kind,start=None,end=None):
             
             if len(er) != 0:
                 
-            
-            
                 epi={}
                 result=er.aggregate(Sum('value'),Count('value'))
                 sum,count=int(result.get('value__sum')),int(result.get('value__count'))
