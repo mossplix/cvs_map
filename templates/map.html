@@ -23,9 +23,9 @@ var minLat={{minLat}};
 var maxLat={{maxLat}};
 var minLon={{minLon}};
 var maxLon={{maxLon}};
-var zoom;
-var maxvalue;
+var zoom=8;
 var layerContainer;
+var hf="/health_facilities?start=undefined&end=undefined&maxLat=3.88875&maxLon=33.80176&minLat=2.1444&minLon=31.198&zoom=8"
 
 /*function to get color given a map_url
  * each slug maps to an icon and color in a map_types
@@ -55,85 +55,126 @@ var layerContainer;
 	 return slug
 	 
 }
+ /*
+  *function to fetch content  and map it given a url 
+  *
+  *
+  */
+function fetchContent(url)
+ {
+  $.ajax({
+		  type:"GET",
+		  url:url,
+		  dataType:"json",
+		  success: function (data) {
+		    $.each(data, function(key,value){
+			   
+			
+			     
+		    	if( (value['longitude'] != "undefined") && (value['lat'] != "undefined")&& (value['icon'] != undefined) && (value['lon'] != "None") && (value['lat'] != "None")) {
+					if (url.match('health_facilities'))
+					{
+					if(value['icon'].match('chart.apis.google.com'))
+					{
+						addMarkerSimple(value['lon'],value['lat'],value['icon']);
+						
+					}
+					if(zoom<10){
+							
+							addmarker(value['lon'],value['lat'],value['title'],value['icon'],value['desc'],url);
+					}
+							}
+						else{
+							addGraph(value['heat'],parseFloat(value['lon']),parseFloat(value['lat']),value['color'],url,value['desc']);
+							
 
-/*function to add layers to the map. it checks all the layers for any wih a checkbox clicked and 
- * 
- *does a corresponding get request  for the associated data from the server 
- * 
- */ 
-                         
-function addToMap(){
-	
-	//map.clearOverlays();
-	layerContainer.find('input:unchecked').each(function (){
-		var key=$(this).attr('name');
-		var slug=getType(map_urls[key][1]);
-		if(markers[slug])
-		{
-		removeOverlays(slug);
-		}
+							}
+		    	}
+		    	
+		     
+		    });
+		    
+		    //document.getElementById('loading').setAttribute("class", "hidden");
+		    
+		  }
+	  
+		});
 
-	});
-	layerContainer.find('input:checked').each(function (){
-		document.getElementById('loading').setAttribute("class", "show");
-		var key=$(this).attr('name');
-		var slug=getType(map_urls[key][1]);
-		markers[slug]=[];
+  $.each(markers[hf], function(key,value){
+  	
+  	
+  	  	var pnt=new GPoint(parseFloat(value.C.lng()),parseFloat(value.C.lat()));
+  	 
+  	  	if (points[pnt])
+  	  	{
+  	  	  	
+  	  	  	var desc="";
+  	  	$.each(points[pnt], function(key,value){desc=desc+'<p>'+value+'</p>'});
+  	  	
+  		GEvent.addListener(value, 'click',
+  	    	    function() {
+  	    	        value.openInfoWindowHtml(desc);
+  	    	    });
+  	  	}
+  	
+  	
+  	
+  	}); 
 
-		
-		
-		if (key && map_urls[key][1] ){
-		 maxLat= map.getBounds().getNorthEast().lat();
-		maxLon=map.getBounds().getNorthEast().lng();
-		minLat=map.getBounds().getSouthWest().lat();
-		minLon=map.getBounds().getSouthWest().lng();
-		zoom=map.getZoom();
-			markers=[];
-			var url=map_urls[key][1] + "?start="+start_value+"&end="+end_value+"&maxLat="+ maxLat + "&maxLon=" +maxLon +"&minLat="+ minLat + "&minLon=" + minLon+"&zoom="+zoom;
-			$.ajax({
-				  type:"GET",
-				  url:url,
-				  dataType:"json",
-				  success: function (data) {
-				  maxvalue=data['maxvalue'];
-				    $.each(data, function(key,value){
-					    var d=value['maxvalue'];
-					   
-					    if ( d==undefined)
-					    {
-						  
-					    var ty=new String(value['type']);
-					    
-					   
-				    	if( (value['longitude'] != "undefined") && (value['latitude'] != "undefined")&& (value['icon'] != undefined) && (value['longitude'] != "None") && (value['latitude'] != "None")) {
-				    		 addmarker(value['longitude'],value['latitude'],value['name'],value['icon'],value['description'],value['type']);
-								
-							    var d=parseFloat(value['data']/maxvalue);
-					    if( ty != "undefined"){
-				    	addGraph(d,parseFloat(value['longitude']),parseFloat(value['latitude']),value['color'],value['type']);
-					    }
-				    	
-				    	
-				    	}
-					    }
-					    
-				     
-				    });
-				    
-				    document.getElementById('loading').setAttribute("class", "hidden");
-				    
-				  }
-			  
-				});
-
-		}
 
 	}
+  
 
-			);
-}
+ 
+ /*function to add layers to the map. it checks all the layers for any wih a checkbox clicked and 
+  * 
+  *does a corresponding get request  for the associated data from the server 
+  * 
+  */ 
+                          
+ function addToMap(){
+ 	
+ 	map.clearOverlays();
+ 	var url;
+ 	var key;
+ 	
+ 	layerContainer.find('input:checked').each(function (){
+ 		key=$(this).attr('name');
+ 		url=map_urls[key][1] + "?start="+start_value+"&end="+end_value+"&maxLat="+ maxLat + "&maxLon=" +maxLon +"&minLat="+ minLat + "&minLon=" + minLon+"&zoom="+zoom;
+ 		if (key && map_urls[key][1] ){
+ 		 maxLat= map.getBounds().getNorthEast().lat();
+ 		maxLon=map.getBounds().getNorthEast().lng();
+ 		minLat=map.getBounds().getSouthWest().lat();
+ 		minLon=map.getBounds().getSouthWest().lng();
+ 		zoom=map.getZoom();
+ 		if (zoom>10)
+ 		{	
+			fetchContent('/health_facilities?start=undefined&end=undefined&maxLat=3.88875&maxLon=33.80176&type=1&minLat=2.1444&minLon=31.198&zoom='+zoom);
+ 		}
+ 		addOverlays(hf);
+ 		
+ 		
+ 			if (markers[url]==undefined || layers[url]==undefined)
+ 			{
+ 	 			fetchContent(url);
+ 			
+ 			}
+ 			else{
+ 				addOverlays(url);
+
+ 			}
+
+ 		}
+
+ 	}
+
+ 			);
+ }
+
+
+
 $(document).ready( function() {
-
+	init();
 
 layerContainer = $('#ol');
 
@@ -151,6 +192,7 @@ hc.addClass('hidden');
 layerContainer.find('input').click(addToMap);
 
 
+addToMap();
 
 });
 </script>
