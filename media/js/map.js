@@ -141,7 +141,7 @@ function addmarker(x,y,title,icon,url) {
 	
 	mIcon.iconSize = new GSize(20,20);
 	mIcon.shadowSize=new GSize(0,0);	
-	mIcon.iconAnchor = new GPoint(0, 0);
+	mIcon.iconAnchor = new GPoint(10, 10);
     var marker = new GMarker(point,mIcon);
     map.addOverlay(marker);
     var desc=[];
@@ -149,7 +149,10 @@ function addmarker(x,y,title,icon,url) {
     {
     	
     	$.each(colors, function(key,value){
-    		desc.push(points[point][value]);	
+    		if(points[point][value]){
+    			
+    		desc.push(points[point][value]);
+    		}
     	
     	});
     	
@@ -171,9 +174,9 @@ function addMarkerSimple(x,y,icon) {
     var point = new GPoint(parseFloat(x),parseFloat(y));
 	var mIcon  = new GIcon(G_DEFAULT_ICON, icon);
 	
-	mIcon.iconSize = new GSize(50,32);
+	mIcon.iconSize = new GSize(57,32);
 	mIcon.shadowSize=new GSize(0,0);
-	mIcon.iconAnchor = new GPoint(51, 0);
+	mIcon.iconAnchor = new GPoint(58, 0);
 
 	
     var marker = new GMarker(point,mIcon);

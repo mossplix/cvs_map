@@ -142,7 +142,7 @@ def deaths(request):
                 if total_deaths>maxvalue:
                     maxvalue=total_deaths
                 death['heat']=total_deaths
-                death['desc']="<p>Deaths</p>total_deaths: "+str(total_deaths)
+                death['desc']="<p><b>Deaths</b></p>total_deaths: "+str(total_deaths)
                 death['icon']="/Media/img/"+MAP_TYPES['deaths'][0]
                 death['color']=MAP_TYPES['deaths'][1]
                 death_reports.append(death)
@@ -190,7 +190,7 @@ def births(request):
             if birth_count>maxvalue:
                 maxvalue=birth_count
             br['heat']=birth_count
-            br['desc']="<p>Births</p>Birth Reports: "+str(birth_count)
+            br['desc']="<p><b>Births</b></p>Birth Reports: "+str(birth_count)
             br['icon']="/Media/img/"+MAP_TYPES['births'][0]
             br['color']=MAP_TYPES['births'][1]
             breports_dict.append(br)
@@ -237,7 +237,7 @@ def malnutrition(request,start_date=None,end_date=None):
             if mauc_count>maxvalue:
                 maxvalue=mauc_count
             mr['heat']=mauc_count
-            mr['desc']="<p>Malnutrition</p>Number Of Cases:"+str(mauc_count)
+            mr['desc']="<p><b>Malnutrition</b></p>Number Of Cases:"+str(mauc_count)
             mr['icon']="/Media/img/"+MAP_TYPES['malnutrition'][0]
             mr['color']=MAP_TYPES['malnutrition'][1]
             mauc_reports.append(mr)
@@ -297,7 +297,7 @@ def epi_kind(request,kind,start=None,end=None):
                 epi['lat']=str(er[0].reporter.healthreporter.facility.latitude)
                 epi['lon']=str(er[0].reporter.healthreporter.facility.longitude)
                 epi['heat']=normalized_value
-                epi['desc']="%s<p>total number of cases: %s</p><p>number of reports: %s</p>"%(dc[kind],sum,count)
+                epi['desc']="<p><b>%s</b></p><p>total number of cases: %s</p><p>number of reports: %s</p>"%(dc[kind],sum,count)
                 epi['color']=MAP_TYPES[kind][1]
                 if kind in MAP_TYPES.keys():
                     epi['icon']="/Media/img/"+MAP_TYPES[kind][0]
