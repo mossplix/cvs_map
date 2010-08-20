@@ -78,7 +78,7 @@ def health_facilities(request):
         if facility in facilities_with_reporters:
             fac['icon']="/Media/img/R"+facility.kind.name+".png"
         if zoom>10 and type==1:
-            fac['icon']="http://chart.apis.google.com/chart?chst=d_text_outline&chld=FF8888|18|l|000000|_|%s|"%(facility.name)      
+            fac['icon']="http://chart.apis.google.com/chart?chst=d_text_outline&chld=000000|12|l|ffffff|_|%s|"%(facility.name)      
         fac['color']=MAP_TYPES['health_facilities'][1]
         facility_list.append(fac)
     return JsonResponse(facility_list)
@@ -142,7 +142,7 @@ def deaths(request):
                 if total_deaths>maxvalue:
                     maxvalue=total_deaths
                 death['heat']=total_deaths
-                death['desc']="total_deaths: "+str(total_deaths)
+                death['desc']="<p>Deaths</p>total_deaths: "+str(total_deaths)
                 death['icon']="/Media/img/"+MAP_TYPES['deaths'][0]
                 death['color']=MAP_TYPES['deaths'][1]
                 death_reports.append(death)
@@ -190,7 +190,7 @@ def births(request):
             if birth_count>maxvalue:
                 maxvalue=birth_count
             br['heat']=birth_count
-            br['desc']="Birth Reports: "+str(birth_count)
+            br['desc']="<p>Births</p>Birth Reports: "+str(birth_count)
             br['icon']="/Media/img/"+MAP_TYPES['births'][0]
             br['color']=MAP_TYPES['births'][1]
             breports_dict.append(br)
@@ -237,7 +237,7 @@ def malnutrition(request,start_date=None,end_date=None):
             if mauc_count>maxvalue:
                 maxvalue=mauc_count
             mr['heat']=mauc_count
-            mr['desc']="Number Of Cases:"+str(mauc_count)
+            mr['desc']="<p>Malnutrition</p>Number Of Cases:"+str(mauc_count)
             mr['icon']="/Media/img/"+MAP_TYPES['malnutrition'][0]
             mr['color']=MAP_TYPES['malnutrition'][1]
             mauc_reports.append(mr)
@@ -251,6 +251,8 @@ def malnutrition(request,start_date=None,end_date=None):
 
 def epi_kind(request,kind,start=None,end=None):
     from django.db.models import Sum,Count
+    from cvs.models import DISEASE_CHOICES
+    dc=dict(DISEASE_CHOICES)
     KIND=str(kind)
     try:
         start_date=request.GET.get('start', None)
@@ -295,10 +297,11 @@ def epi_kind(request,kind,start=None,end=None):
                 epi['lat']=str(er[0].reporter.healthreporter.facility.latitude)
                 epi['lon']=str(er[0].reporter.healthreporter.facility.longitude)
                 epi['heat']=normalized_value
-                epi['desc']="<p>total number of cases: %s</p><p>number of reports: %s</p>"%(sum,count)
+                epi['desc']="%s<p>total number of cases: %s</p><p>number of reports: %s</p>"%(dc[kind],sum,count)
+                epi['color']=MAP_TYPES[kind][1]
                 if kind in MAP_TYPES.keys():
                     epi['icon']="/Media/img/"+MAP_TYPES[kind][0]
-                    epi['color']=MAP_TYPES[kind][1]
+                    
                 else:
                     epi['icon']="/marker/25/orange/%s/marker.png"%kind
                 epi_obs.append(epi)
@@ -306,8 +309,11 @@ def epi_kind(request,kind,start=None,end=None):
             
         except:
             continue
-    for t in epi_obs:
-        t['heat']=t['heat']/float(maxvalue)
+    try:
+        for t in epi_obs:
+            t['heat']=t['heat']/float(maxvalue)
+    except:
+        pass
     return JsonResponse(epi_obs)
     
 def map(request):

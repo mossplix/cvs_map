@@ -6,18 +6,20 @@
 var centerLatitude=2.80000;
 var centerLongitude=32.333333333;
 var startZoom=9;
-var points ={};
+var points = {};
 var polylines = [];
 var markers= {};
-var titles = [];
 var infopanel;
 var start_value;
 var end_value;
 var bbox;
 var current_zoom;
-var layers={} ; 
+var layers={}; 
 var urls={};
-
+var colors=[];
+//make description global
+var description="";
+var hf="/health_facilities?start=undefined&end=undefined&maxLat=3.88875&maxLon=33.80176&minLat=2.1444&minLon=31.198&zoom=8"
 
 //function to draw simple map
 function init() {
@@ -62,13 +64,21 @@ function addGraph(data,x,y,color,url,desc){
 	var increment = (parseFloat(height)/10.0)/100;
 	var start=new GPoint(parseFloat(x),parseFloat(y));
 	var volume = parseInt((parseFloat(data)*100)/maxsize);
-	if (points[start]){
-		points[start].push(desc);
+	
+	if(points[start])
+	{
+	
+	points[start][String(color)]=desc;
 	}
 	else{
-		points[start]=[];
-		points[start].push(desc);
+		
+		points[start]={};
+		points[start][String(color)]=desc;
+		
+		
+		
 	}
+		
 	pointpair.push(start);
 	
 	pointpair.push(new GPoint(parseFloat(x+increment),parseFloat(y+increment)));
@@ -82,7 +92,9 @@ function addGraph(data,x,y,color,url,desc){
     	layers[url]=[]
     	layers[url].push(line);
     	  	
-    }	
+    }
+	
+	
 	map.addOverlay(line);
 }
 function removeOverlays(url){
@@ -116,52 +128,52 @@ function addOverlays(url){
 	if (l_list != undefined)
 	{
 	$.each(l_list, function(key,value){map.addOverlay(value);});
-	}
-	
-	
-	
+	}	
 }
 
 
-function addmarker(x,y,title,icon,description,url) {
-	
-	
+function addmarker(x,y,title,icon,url) {
+	if (icon.match("Media"))
+	{
 	
     var point = new GPoint(parseFloat(x),parseFloat(y));
-    
-    
-    
 	var mIcon  = new GIcon(G_DEFAULT_ICON, icon);
 	
 	mIcon.iconSize = new GSize(20,20);
 	mIcon.shadowSize=new GSize(0,0);	
-	
+	mIcon.iconAnchor = new GPoint(0, 0);
     var marker = new GMarker(point,mIcon);
     map.addOverlay(marker);
-//    GEvent.addListener(marker, 'click',
-//    	    function() {
-//    	        marker.openInfoWindowHtml('<p class="help">'+title+'</h1>'+'<p>'+description+'</p>');
-//    	    });
-    if(markers[url])
+    var desc=[];
+    if (points[point])
     {
-    markers[url].push(marker);
-    }
-    else{
-    	markers[url]=[]
-    	markers[url].push(marker);
-    	  	
+    	
+    	$.each(colors, function(key,value){
+    		desc.push(points[point][value]);	
+    	
+    	});
+    	
+    	
     }
     
-        
+    
+    var ev=GEvent.addListener(marker, 'click',
+    	    function() {
+    	        marker.openInfoWindowHtml('<p class="help">'+title+'</h1>'+'<p>'+String(desc).replace(",","")+'</p>');
+    	    });
+    
+   
+	} 
+      
 }   
 
 function addMarkerSimple(x,y,icon) {
     var point = new GPoint(parseFloat(x),parseFloat(y));
 	var mIcon  = new GIcon(G_DEFAULT_ICON, icon);
 	
-	mIcon.iconSize = new GSize(69,47);
+	mIcon.iconSize = new GSize(50,32);
 	mIcon.shadowSize=new GSize(0,0);
-	mIcon.iconAnchor = new GPoint(0, 0);
+	mIcon.iconAnchor = new GPoint(51, 0);
 
 	
     var marker = new GMarker(point,mIcon);

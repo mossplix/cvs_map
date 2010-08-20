@@ -14,7 +14,6 @@
 <script type="text/javascript" src="/Media/js/map.js"></script>
  <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key={{map_key}}" type="text/javascript"></script>
 <script type="text/javascript" src="/Media/js/selectToUISlider.jQuery.js"></script>
-<script type="text/javascript" src="/Media/jquery-ui/js/markermanager_packed.js"></script>
 <script type="text/javascript">
 var layerContainer = $('#ol');
 var map_urls={{Map_urls}};
@@ -24,8 +23,9 @@ var maxLat={{maxLat}};
 var minLon={{minLon}};
 var maxLon={{maxLon}};
 var zoom=8;
+var desc={};
 var layerContainer;
-var hf="/health_facilities?start=undefined&end=undefined&maxLat=3.88875&maxLon=33.80176&minLat=2.1444&minLon=31.198&zoom=8"
+
 
 /*function to get color given a map_url
  * each slug maps to an icon and color in a map_types
@@ -46,6 +46,7 @@ var hf="/health_facilities?start=undefined&end=undefined&maxLat=3.88875&maxLon=3
 	 return color
 	 
 }
+
  function getType(url){
 
 	 var z=url.split("/")
@@ -55,6 +56,10 @@ var hf="/health_facilities?start=undefined&end=undefined&maxLat=3.88875&maxLon=3
 	 return slug
 	 
 }
+
+
+ 
+ 
  /*
   *function to fetch content  and map it given a url 
   *
@@ -79,13 +84,15 @@ function fetchContent(url)
 						addMarkerSimple(value['lon'],value['lat'],value['icon']);
 						
 					}
-					if(zoom<10){
+					
 							
-							addmarker(value['lon'],value['lat'],value['title'],value['icon'],value['desc'],url);
-					}
+							addmarker(value['lon'],value['lat'],value['title'],value['icon'],url,value['color']);
+							
+					
 							}
 						else{
 							addGraph(value['heat'],parseFloat(value['lon']),parseFloat(value['lat']),value['color'],url,value['desc']);
+							
 							
 
 							}
@@ -100,26 +107,8 @@ function fetchContent(url)
 	  
 		});
 
-  $.each(markers[hf], function(key,value){
-  	
-  	
-  	  	var pnt=new GPoint(parseFloat(value.C.lng()),parseFloat(value.C.lat()));
-  	 
-  	  	if (points[pnt])
-  	  	{
-  	  	  	
-  	  	  	var desc="";
-  	  	$.each(points[pnt], function(key,value){desc=desc+'<p>'+value+'</p>'});
-  	  	
-  		GEvent.addListener(value, 'click',
-  	    	    function() {
-  	    	        value.openInfoWindowHtml(desc);
-  	    	    });
-  	  	}
-  	
-  	
-  	
-  	}); 
+  
+  
 
 
 	}
@@ -135,13 +124,15 @@ function fetchContent(url)
  function addToMap(){
  	
  	map.clearOverlays();
+ 	
  	var url;
  	var key;
- 	
+ 	colors=[];
  	layerContainer.find('input:checked').each(function (){
  		key=$(this).attr('name');
  		url=map_urls[key][1] + "?start="+start_value+"&end="+end_value+"&maxLat="+ maxLat + "&maxLon=" +maxLon +"&minLat="+ minLat + "&minLon=" + minLon+"&zoom="+zoom;
  		if (key && map_urls[key][1] ){
+ 			colors.push(getColor(map_urls[key][1]))
  		 maxLat= map.getBounds().getNorthEast().lat();
  		maxLon=map.getBounds().getNorthEast().lng();
  		minLat=map.getBounds().getSouthWest().lat();
@@ -150,17 +141,25 @@ function fetchContent(url)
  		if (zoom>10)
  		{	
 			fetchContent('/health_facilities?start=undefined&end=undefined&maxLat=3.88875&maxLon=33.80176&type=1&minLat=2.1444&minLon=31.198&zoom='+zoom);
- 		}
+			fetchContent(hf);
+	 		}
  		addOverlays(hf);
+ 		
  		
  		
  			if (markers[url]==undefined || layers[url]==undefined)
  			{
  	 			fetchContent(url);
+ 	 			
+ 	 			
+ 	 			
  			
  			}
  			else{
  				addOverlays(url);
+ 				
+ 				
+ 				
 
  			}
 
@@ -179,6 +178,8 @@ $(document).ready( function() {
 layerContainer = $('#ol');
 
 
+
+
 $.each( map_urls, function( key, val ) {
 	
 	var color=getColor(val[1]);
@@ -193,6 +194,7 @@ layerContainer.find('input').click(addToMap);
 
 
 addToMap();
+
 
 });
 </script>

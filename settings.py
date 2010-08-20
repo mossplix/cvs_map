@@ -29,7 +29,7 @@ MAP_URLS=(('Health Facilities','/health_facilities'),
 MAP_TYPES={
            'health_facilities':['army.png','#14740a'],
            'deaths':['black.png','#121703'],
-           'births':['white.png','#ffffff'],
+           'births':['white.png','#ff99ff'],
            'malnutrition':['yellow.png','#dfea28'],
            'ma':['green.png','#2dea28'],
            'me':['pinky.png','#c160b7'],
@@ -49,6 +49,9 @@ MAP_TYPES={
            
            
             }
+##base urls
+# url minzoom maxzoom
+BASE_LAYERS=(('/healthfacilities/?label=true',8),)
 #from djangosms.stats.models import ObservationKind
 #observation_kinds=ObservationKind.objects.filter(slug__startswith="epidemiological_observation").distinct().values('slug','name')
 #for kind in observation_kinds:
