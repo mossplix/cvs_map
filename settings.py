@@ -11,18 +11,21 @@ MAP_URLS=(('Health Facilities','/health_facilities'),
           ('Births','/births'),
           ('Malnutrition','/malnutrition'),
           ('Malaria','/epi/ma'),
-          ('Measles','/epi/me'),
           ('Dysentry','/epi/bd'),
-          ('Animal Bites','/epi/ab'),
-          ('Polio','/epi/af'),
-          ('Yellow Fever','/epi/yf'),
-          ('Cholera','/epi/ch'),
           ('Tuberclosis','/epi/tb'),
-          ('Guinea Worm','/epi/gw'),
-          ('Meningitis','/epi/mg'),
-          ('Neonatal Tetanus','/epi/nt'),
-          ('Plague','/epi/pl'),
-          ('Rabies','/epi/rb'),
+          ('Other Diseases','/epi/other'),
+#          ('Measles','/epi/me'),
+#          
+#          ('Animal Bites','/epi/ab'),
+#          ('Polio','/epi/af'),
+#          ('Yellow Fever','/epi/yf'),
+#          ('Cholera','/epi/ch'),
+#          
+#          ('Guinea Worm','/epi/gw'),
+#          ('Meningitis','/epi/mg'),
+#          ('Neonatal Tetanus','/epi/nt'),
+#          ('Plague','/epi/pl'),
+#          ('Rabies','/epi/rb'),
             
           )
 ##map types
@@ -32,23 +35,31 @@ MAP_TYPES={
            'births':['white.png','#ff99ff'],
            'malnutrition':['yellow.png','#dfea28'],
            'ma':['green.png','#2dea28'],
-           'me':['pinky.png','#c160b7'],
            'bd':['br.png','#ff0000'],
-           'ab':['white.png','#ffffff'],
-           'af':['green.png','#2dea28'],
-           'yf':['blue.png','#28442e'],
-           'ch':['red.png','#8b252a'],
            'tb':['orange.png','#b75600'],
-           'gw':['rl.png','#8a737d'],
-           'mg':['navy.png','#00052f'],
-           'nt':['lime.png','#e8e0d9'],
-           'pl':['dbrown.png','#663300'],
-           'rb':['brown.png','#cc9933'],
-           'ma':['cy.png','#9999ff'],
-           
-           
-           
-            }
+           'other': ['orange.png','#df7890']} 
+                     
+                      
+                      
+                      
+                      
+#                      { 'me':['pinky.png','#c160b7'],
+#                               'ab':['white.png','#ffffff'],
+#                               'af':['green.png','#2dea28'],
+#                               'yf':['blue.png','#28442e'],
+#                               'ch':['red.png','#8b252a'],
+#                               'gw':['rl.png','#8a737d'],
+#                               'mg':['navy.png','#00052f'],
+#                               'nt':['lime.png','#e8e0d9'],
+#                               'pl':['dbrown.png','#663300'],
+#                               'rb':['brown.png','#cc9933'],
+#                               'ma':['cy.png','#9999ff']
+#                       }]
+#           
+#           
+#           
+#           
+#            }
 ##base urls
 # url minzoom maxzoom
 BASE_LAYERS=(('/healthfacilities/?label=true',8),)

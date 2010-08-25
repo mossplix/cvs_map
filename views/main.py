@@ -257,35 +257,38 @@ def epi_kind(request,kind,start=None,end=None):
     try:
         start_date=request.GET.get('start', None)
         end_date=request.GET.get('end',None)
-        
-    
+
     except:
-        start_date,end_date=None,None
-        
-        
+        start_date,end_date=None,None 
     #Month=month_options[month][1]
-   
-    
     epi_obs=[]
+    other=['me','ab','af','yf','ch','gw','mg','nt','pl','rb']
     if str(start_date)=="undefined" or str(end_date)=="undefined":
         start_date,end_date=None,None
     if start_date==None or end_date==None:
-        
-        main_query=EpiReport.objects.filter(valid=True,disease=KIND).order_by('message__time')
-        
+        if KIND=="other":
+            main_query=EpiReport.objects.filter(valid=True,disease__in=other).order_by('message__time')
+        else:
+            main_query=EpiReport.objects.filter(valid=True,disease=KIND).order_by('message__time')
+              
     else:
         start_date=format_date(str(start_date)) 
-        end_date=format_date(str(end_date),start=False)   
-        main_query=EpiReport.objects.filter(valid=True,disease=KIND).filter(message__time__range=(start_date,end_date)).order_by('message__time')
+        end_date=format_date(str(end_date),start=False)
+        if KIND=="other":   
+            main_query=EpiReport.objects.filter(valid=True,disease__in=other).filter(message__time__range=(start_date,end_date)).order_by('message__time')
+        else:
+            main_query=EpiReport.objects.filter(valid=True,disease=KIND).filter(message__time__range=(start_date,end_date)).order_by('message__time')
+            
     facilities=Facility.objects.all()
     maxvalue=0
+    
     for facility  in facilities:
         try:
             er = main_query.filter(reporter__healthreporter__facility=facility)
+           
             
             
             if len(er) != 0:
-                
                 epi={}
                 result=er.aggregate(Sum('value'),Count('value'))
                 sum,count=int(result.get('value__sum')),int(result.get('value__count'))
@@ -293,17 +296,36 @@ def epi_kind(request,kind,start=None,end=None):
                 if normalized_value>maxvalue:
                     maxvalue=normalized_value
                 epi['title']= str(er[0].reporter.healthreporter.facility.name)
-                
                 epi['lat']=str(er[0].reporter.healthreporter.facility.latitude)
                 epi['lon']=str(er[0].reporter.healthreporter.facility.longitude)
                 epi['heat']=normalized_value
-                epi['desc']="<p><b>%s</b></p><p>total number of cases: %s</p><p>number of reports: %s</p>"%(dc[kind],sum,count)
                 epi['color']=MAP_TYPES[kind][1]
                 if kind in MAP_TYPES.keys():
                     epi['icon']="/Media/img/"+MAP_TYPES[kind][0]
                     
                 else:
                     epi['icon']="/marker/25/orange/%s/marker.png"%kind
+
+                if KIND=="other":
+                    desc=[]
+                    for k in other:
+                        result=er.filter(disease=k).aggregate(Sum('value'),Count('value'))
+                        try:
+                            sum,count=int(result.get('value__sum')),int(result.get('value__count'))
+                        except:
+                            sum,count=0,0
+                        if count>0:
+                            d="<p><b>%s</b></p><p>total number of cases: %s</p><p>number of reports: %s</p>"%(dc[k],sum,count)
+                            desc.append(d)
+                   
+                    desc_s=" ".join(desc)
+                    epi['desc']=desc_s
+                    
+        
+                else:
+                    epi['desc']="<p><b>%s</b></p><p>total number of cases: %s</p><p>number of reports: %s</p>"%(dc[kind],sum,count)
+                    
+                
                 epi_obs.append(epi)
                 
             
@@ -325,5 +347,51 @@ def map(request):
     return render_to_response("map.html",locals(),context_instance=RequestContext(request))
 
 
+def timeMap(request):
+    map_key=MAP_KEY
+    minLon,maxLon,minLat,maxLat=mark_safe(min_lat),mark_safe(max_lat),mark_safe(min_lon),mark_safe(max_lon)
+    return render_to_response("messages_time_map.html",locals(),context_instance=RequestContext(request))
+def getMessages(request):
+    from djangosms.core.models import Incoming
+    import datetime
+    today=datetime.datetime.now()
+    back=today-datetime.timedelta(days=40)
+    min_date=request.GET.get('min', back)
+    max_date=request.GET.get('max',today)
+    
+    messages=Incoming.objects.filter(time__lte=max_date,\
+        time__gte=min_date)
+    message_dict={}
+    message_dict['dateTimeFormat']= 'iso8601'
+    events=[]
+    for message in messages:
+        try:
+            reporter=Reporter.objects.get(connections__uri=message.uri)
+        except Reporter.DoesNotExist:
+            reporter = None
 
+        if reporter is not None and reporter.name !=u"" :
+            try:
+                msg={}
+                msg['start']=str(message.time)
+                msg['lat']=str(reporter.healthreporter.facility.latitude)
+                msg['lng']=str(reporter.healthreporter.facility.longitude)
+                msg['title']=reporter.name
+                msg['description']=message.text
+                msg['link']=""
+        #        msg['icon']=""
+        #        msg['image']=""
+                msg['color']="#8b252a"
+                msg['textcolor']="#8b252a"
+                events.append(msg)
+            except:
+                continue
+           
+    message_dict['events']=events
+    
+    return JsonResponse(message_dict)
+        
+        
+        
+        
 
