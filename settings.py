@@ -75,4 +75,4 @@ min_lon="2.1444"
 max_lon="3.88875"
 
 ##localhost:8080 key. you will probably need to get one for your host
-MAP_KEY="ABQIAAAAYimH_excdTjwGjM6LcP-DhTwM0brOpm-All5BF6PoaKBxRWWERT9OyCpc3hGVZ8kB3Z6S8RK5WKM1g"
+MAP_KEY="ABQIAAAAYimH_excdTjwGjM6LcP-DhTX43PO8-sEH-jeG6rM560fvsomnhQ4fvBin-y4dRWztAXXs1ap0AwfdQ"
