@@ -15,6 +15,11 @@
  <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key={{map_key}}" type="text/javascript"></script>
 <script type="text/javascript" src="/Media/js/selectToUISlider.jQuery.js"></script>
 <script type="text/javascript">
+// FIXME - be consistent: either all JS goes here (and not in map.js), or
+// all goes in map.js.
+// The only exception should be variables that are initialized from values passed
+// to the template, a single init() call could be made here, for example:
+// init({{ minLat }}, {{ maxLat }}, {{ minLon }}, {{ maxLon }}, {{ Map_urls }}, {{ map_types }});
 var layerContainer = $('#ol');
 var map_urls={{Map_urls}};
 var map_types={{map_types}};
@@ -59,7 +64,7 @@ var layerContainer;
 
 
  
- 
+//FIXME: more documentation, clean-up whitespace 
  /*
   *function to fetch content  and map it given a url 
   *
@@ -75,8 +80,12 @@ function fetchContent(url)
 		    $.each(data, function(key,value){
 			   
 			
-			     
+	       // FIXME: lat and lon are the only valid values, remove
+	       // legacy code		     
 		    	if( (value['longitude'] != "undefined") && (value['lat'] != "undefined")&& (value['icon'] != undefined) && (value['lon'] != "None") && (value['lat'] != "None")) {
+		    	// FIXME: health_facilities should not be hard-coded here, this makes maps
+		    	// no longer generic!  This should be based on whether this particular
+		    	// object has an icon, or not
 					if (url.match('health_facilities'))
 					{
 					if(value['icon'].match('chart.apis.google.com'))
@@ -140,6 +149,9 @@ function fetchContent(url)
  		zoom=map.getZoom();
  		if (zoom>10)
  		{	
+ 		// FIXME hard-coded health_facilities call: again, we need this to be generic
+ 		// find a way to specify layers that are "manadatory" in the settings, rather
+ 		// than hard-coding it here
 			fetchContent('/health_facilities?start=undefined&end=undefined&maxLat=3.88875&maxLon=33.80176&type=1&minLat=2.1444&minLon=31.198&zoom='+zoom);
 			fetchContent(hf);
 	 		}
@@ -183,6 +195,8 @@ layerContainer = $('#ol');
 $.each( map_urls, function( key, val ) {
 	
 	var color=getColor(val[1]);
+	// FIXME this generates mis-matched html (closing span tag without opening span tag), why is this here?
+	// document or remove 
     layerContainer.append('<li class="fg-button ui-state-default" style="border-bottom:1px solid #ffffff;"><input type="checkbox" name="'+ key+'"></input><a href="#" ><button class="fg-button ui-state-default">'+val[0]+'</button></a><span style="width:15px;height:15px;background-color:'+color+';float:right;margin-top:3px;margin-right:6px;"></span></li>')});
 
 var hc=$('input[name=0]');
@@ -203,6 +217,7 @@ addToMap();
 {% endblock %}
 
 {% block content %}
+<!-- FIXME clean up indentation, whitespace -->
 <div style="margin-bottom:29px;">
 
 <h1>Mapping</h1>

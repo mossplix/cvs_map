@@ -7,6 +7,8 @@ from django.http import HttpResponse
 from django.utils import simplejson
 
 month_options=((),(1,"Jan"),(2,"Feb"),(3,"Mar"),(4,"Apr"),(5,"May"),(6,"Jun"),(7,"Jul"),(8,"Aug"),(9,"Nov"),(10,"oct"),(11,"Nov"),(12,"Dec"))
+# FIXME MappableObjectMeta and MappableObject not referenced anywhere,
+# remove them!
 class MappableObjectMeta(type):
     """meta class of the mappable object"""
     def __init__(cls,name,bases,attrs):
@@ -28,7 +30,7 @@ class MappableObject(object):
             return(simplejson.dumps(self.original_obj))
     
    
-   
+# FIXME documentation
 def date_range(startt,endd):
     month_options=((),(1,"Jan"),(2,"Feb"),(3,"Mar"),(4,"Apr"),(5,"May"),(6,"Jun"),(7,"Jul"),(8,"Aug"),(9,"Nov"),(10,"oct"),(11,"Nov"),(12,"Dec"))
     end_f=datetime.datetime.strptime(endd,'%Y-%m-%d').date()
@@ -55,5 +57,6 @@ def date_range(startt,endd):
     start_html=start_opts%("start","","start","start")
     end_html=start_opts%("end","","end","end")
     return mark_safe(start_html+end_html)
+
 if __name__=="__main__":
     print date_range("2010-06-12","2013-05-13")

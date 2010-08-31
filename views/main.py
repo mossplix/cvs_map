@@ -9,6 +9,8 @@ from django.utils import simplejson
 from djangosms.stats.models import *
 from djangosms.reporter.models import *
 from cvs.models import *
+# FIXME Document all functions
+# FIXME All apis should be filtering based on the BOUNDS OF THE MAP
 class JsonResponse(HttpResponse):
         """ return json content type   """
         def __init__(self, obj):
@@ -19,7 +21,7 @@ class JsonResponse(HttpResponse):
         def serialize(self):
             return(simplejson.dumps(self.original_obj))
 
-
+# FIXME remove, doesn't appear to be used
 def geoCode(name):
     
     """
@@ -35,7 +37,7 @@ def geoCode(name):
     lat=float(xmldoc.getElementsByTagName('lat')[0].childNodes[0].data)
     return (lat,lng)
     
-    
+# FIXME clean this up
 #def marker(request,radius=50,color='#1ebfd2',opacity=1.0,text=""):
 #    """
 #draw marker  given color,width and opacity
@@ -51,7 +53,7 @@ def geoCode(name):
 #    img.save(response, 'PNG')
 #    return response  
 
-          
+# FIXME documentation
 def health_facilities(request):
     from cvs.models import Facility,HealthReporter
     try:
@@ -63,6 +65,7 @@ def health_facilities(request):
         type=0
     
     facility_list=[]
+    # FIXME this should be filtering by the window range (maxlon, maxlat, etc.)
     facilities=Facility.objects.all().order_by('name').all()
     facilities_with_reporters=[hc.facility for hc in HealthReporter.objects.all()]
     
@@ -114,13 +117,16 @@ def deaths(request):
     if str(start_date)=="undefined" or str(end_date)=="undefined":
         start_date,end_date=None,None
     if start_date==None or end_date==None:
-        
+
+        #FIXME death_reports, or dreports, not Dreports        
         #Dreports=Report.objects.filter(kind__slug='death').order_by('source__time')
         Dreports=DeathReport.objects.order_by('message__time').filter(valid=True)
     else:
         start_date=format_date(str(start_date)) 
         end_date=format_date(str(end_date),start=False)   
         Dreports=DeathReport.objects.filter(valid=True).order_by('message__time').filter(message__time__range=(start_date,end_date))
+        
+    # FIXME should be filtering by facilities within the zoom window
     facilities=Facility.objects.all()
     
     maxvalue=0
@@ -156,6 +162,9 @@ def deaths(request):
     for t in death_reports:
         t['heat']=t['heat']/float(maxvalue)
     return JsonResponse(death_reports)
+
+# FIXME whitespace between functions
+# FIXME document
 def births(request):
     try:
         start_date=request.GET.get('start', None)
@@ -175,6 +184,8 @@ def births(request):
         start_date=format_date(str(start_date)) 
         end_date=format_date(str(end_date),start=False)   
         birth_reports=NewBirthReport.objects.filter(valid=True).filter(message__time__range=(start_date,end_date)).order_by('message__time')
+        
+    # FIXME filter by zoom window
     facilities=Facility.objects.all()
     maxvalue=0
     

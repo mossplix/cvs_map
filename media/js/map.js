@@ -3,11 +3,14 @@
  * @Author Mugisha Moses
  * 
  **/
+//FIXME hard-coded values?
+//FIXME document variables
+//FIXME cleanup whitespace (no excess
 var centerLatitude=2.80000;
 var centerLongitude=32.333333333;
 var startZoom=9;
-var points = {};
-var polylines = [];
+var points = {};  //FIXME document this data structure
+var polylines = []; //FIXME unused, remove?
 var markers= {};
 var infopanel;
 var start_value;
@@ -19,6 +22,7 @@ var urls={};
 var colors=[];
 //make description global
 var description="";
+// FIXME hard-coded latitude, longitude, and url
 var hf="/health_facilities?start=undefined&end=undefined&maxLat=3.88875&maxLon=33.80176&minLat=2.1444&minLon=31.198&zoom=8"
 
 //function to draw simple map
@@ -43,6 +47,7 @@ function init() {
     
 }
 //window.onload = init;
+//FIXME unused, remove?
 function movemap(x,y) {
     if (marker)
     {
@@ -54,6 +59,7 @@ function movemap(x,y) {
     map.addOverlay(marker);
 }
 
+//FIXME fix the indentation, document
 function addGraph(data,x,y,color,url,desc){
 	//map.clearOverlays();
 	var d=map.getBounds().toSpan();
@@ -98,6 +104,7 @@ function addGraph(data,x,y,color,url,desc){
 	map.addOverlay(line);
 }
 function removeOverlays(url){
+//FIXME remove hard-coded references to health_facilities
 	if (url.match("health_facilities")==null)
 	{
 	m_list=markers[url];
@@ -145,6 +152,8 @@ function addmarker(x,y,title,icon,url) {
     var marker = new GMarker(point,mIcon);
     map.addOverlay(marker);
     var desc=[];
+  //FIXME document the below logic
+  
     if (points[point])
     {
     	
@@ -155,13 +164,14 @@ function addmarker(x,y,title,icon,url) {
     		}
     	
     	});
-    	
+  //FIXME document above  	
     	
     }
     
     
     var ev=GEvent.addListener(marker, 'click',
     	    function() {
+    	        // FIXME why are you having to remove commas from the desc?  document or fix
     	        marker.openInfoWindowHtml('<p class="help">'+title+'</h1>'+'<p>'+String(desc).replace(",","")+'</p>');
     	    });
     

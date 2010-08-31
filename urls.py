@@ -13,12 +13,6 @@ urlpatterns = patterns(
     (r'^epi/(?P<kind>[-a-z]+)',epi_kind),
     (r'^malnutrition',malnutrition),
     (r'^deaths',deaths),
-#    (r'^marker/(?P<radius>[\d]+)/(?P<color>[-a-z]+)/(?P<opacity>[\d]+)/marker.png', marker),
-#                         (r'^marker/(?P<radius>[\d]+)/(?P<color>[-a-z]+)/(?P<text>[-a-zA-Z0-9]+)/marker.png', marker),
-#                        (r'^marker/(?P<radius>[\d]+)/(?P<text>[-a-zA-Z0-9]+)/marker.png', marker),
-#                        (r'^marker/(?P<radius>[\d]+)/marker.png', marker),
      (r'^Media/(?P<path>.*)', 'django.views.static.serve',\
      {'document_root': MEDIA_PATH}),
-     
-    
-    )
+)

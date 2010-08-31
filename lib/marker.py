@@ -1,3 +1,4 @@
+# FIXME Remove this file
 #from PIL import Image,ImageDraw,ImageEnhance,ImageFont
 #from aggdraw import Draw, Pen, Brush
 #
