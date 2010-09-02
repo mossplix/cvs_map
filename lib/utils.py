@@ -11,7 +11,7 @@ month_options = ((), (1, "Jan"), (2, "Feb"), (3, "Mar"), (4, "Apr"), (5, "May"),
 
 def date_range(startt, endd):
     """ generrate html for date range"""
-    month_options = ((), (1, "Jan"), (2, "Feb"), (3, "Mar"), (4, "Apr"), (5, "May"), (6, "Jun"), (7, "Jul"), (8, "Aug"), (9, "Nov"), (10, "oct"), (11, "Nov"), (12, "Dec"))
+    
     end_f = datetime.datetime.strptime(endd, '%Y-%m-%d').date()
     start_f = datetime.datetime.strptime(startt, '%Y-%m-%d').date()
     
