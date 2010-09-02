@@ -1,0 +1,42 @@
+{% extends "map.html" %} {% block title %}Messages Timeline{% endblock
+%} {% block page_stylesheets %}
+
+<link rel="stylesheet" href="/Media/css/timemap.css" type="text/css"
+	media="screen" charset="utf-8">
+{% endblock%} {% block javascripts %}
+
+
+<script type="text/javascript"
+	src="http://simile.mit.edu/timeline/api/timeline-api.js"></script>
+<script
+	src="http://maps.google.com/maps?file=api&amp;v=2&amp;sensor=false&amp;key={{map_key}}"
+	type="text/javascript"></script>
+<script type="text/javascript" src="/Media/js/timemap.js"></script>
+<script type="text/javascript">
+	var minLat={{minLat}};
+    var maxLat={{maxLat}};
+    var minLon={{minLon}};
+    var maxLon={{maxLon}};
+
+    $(document).ready( function() {
+    	init();
+    });
+</script>
+{% endblock %} {% block content %}
+<div style="height: 900px;">
+
+<h1>Mapping</h1>
+
+<p class="help">Displays a timemap of messages in the system.</p>
+
+<div id="timelinecontainer">
+<div id="timeline"></div>
+</div>
+<div id="mapcontainer">
+<div id="map"></div>
+</div>
+
+
+
+</div>
+{% endblock %}

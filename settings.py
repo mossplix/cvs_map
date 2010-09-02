@@ -62,7 +62,7 @@ MAP_TYPES={
 #            }
 ##base urls
 # url minzoom maxzoom
-BASE_LAYERS=(('/healthfacilities/?label=true',8),)
+BASE_LAYER="/health_facilities?start=undefined&end=undefined&maxLat=3.88875&maxLon=33.80176&minLat=2.1444&minLon=31.198&zoom=8"
 #from djangosms.stats.models import ObservationKind
 #observation_kinds=ObservationKind.objects.filter(slug__startswith="epidemiological_observation").distinct().values('slug','name')
 #for kind in observation_kinds:

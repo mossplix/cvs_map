@@ -19,7 +19,11 @@
 <script type="text/javascript"
 	src="/Media/js/selectToUISlider.jQuery.js"></script>
 <script type="text/javascript">
-
+// FIXME - be consistent: either all JS goes here (and not in map.js), or
+// all goes in map.js.
+// The only exception should be variables that are initialized from values passed
+// to the template, a single init() call could be made here, for example:
+// init({{ minLat }}, {{ maxLat }}, {{ minLon }}, {{ maxLon }}, {{ Map_urls }}, {{ map_types }});
 
 var layerContainer = $('#ol');//dom element containing layers
 var map_urls={{Map_urls}};    //the javascript array containing urls
@@ -30,11 +34,11 @@ var minLon={{minLon}};
 var maxLon={{maxLon}};
 var zoom=8;
 var desc={};
-hf="{{base_layer}}";
+
 $(document).ready( function() {
 	init();
-	layerContainer = $('#ol');
 
+layerContainer = $('#ol');
 
 $.each( map_urls, function( key, val ) {
 	
