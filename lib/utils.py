@@ -6,7 +6,7 @@ from django.template import RequestContext
 from django.http import HttpResponse
 from django.utils import simplejson
 
-month_options = ((), (1, "Jan"), (2, "Feb"), (3, "Mar"), (4, "Apr"), (5, "May"), (6, "Jun"), (7, "Jul"), (8, "Aug"), (9, "Sept"), (10, "oct"), (11, "Nov"), (12, "Dec"))
+month_options = ((), (1, "Jan"), (2, "Feb"), (3, "Mar"), (4, "Apr"), (5, "May"), (6, "Jun"), (7, "Jul"), (8, "Aug"), (9, "Sept"), (10, "Oct"), (11, "Nov"), (12, "Dec"))
    
 
 def date_range(startt, endd):

@@ -79,7 +79,7 @@ def health_facilities(request):
     return JsonResponse(facility_list)
 
     
-month_opts = {"Jan":1, "Feb":2, "Mar":3, "Apr":4, "May":5, "Jun":6, "Jul":7, "Aug":8, "Sept":9, "oct":10, "Nov":11, "Dec":12} 
+month_opts = {"Jan":1, "Feb":2, "Mar":3, "Apr":4, "May":5, "Jun":6, "Jul":7, "Aug":8, "Sept":9, "Oct":10, "Nov":11, "Dec":12} 
 
       
 def format_date(date, start=True):
