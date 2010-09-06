@@ -39,9 +39,8 @@ $(document).ready( function() {
 $.each( map_urls, function( key, val ) {
 	
 	var color=getColor(val[1]);
-	// FIXME this generates mis-matched html (closing span tag without opening span tag), why is this here?
-	// document or remove 
-    layerContainer.append('<li class="fg-button ui-state-default" style="border-bottom:1px solid #ffffff;"><input type="checkbox" name="'+ key+'"></input><a href="javascript:void(0)" ><button class="fg-button ui-state-default">'+val[0]+'</button></a><span style="width:15px;height:15px;background-color:'+color+';float:right;margin-top:3px;margin-right:6px;"></span></li>')});
+	
+    layerContainer.append('<li class="fg-button ui-state-default" style="border-bottom:1px solid #ffffff;"><input type="checkbox" name="'+ key+'"></input><a href="javascript:void(0)" ><button class="fg-button ui-state-default">'+val[0]+'</button></a><span style="width:15px;height:15px;background-color:'+color+';float:right;margin-top:3px;margin-right:6px;"></li>')});
 
 var hc=$('input[name=0]');
 hc.attr('checked', true);
@@ -59,7 +58,7 @@ addToMap();
 
 
 {% endblock %} {% block content %}
-<!-- FIXME clean up indentation, whitespace -->
+
 <div style="margin-bottom: 29px;">
 
 <h1>Mapping</h1>
