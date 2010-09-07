@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 from django.conf.urls.defaults import *
 from mapping.views.main import *
 import os
@@ -13,9 +15,8 @@ urlpatterns = patterns(
     (r'^epi/(?P<kind>[-a-z]+)', epi_kind),
     (r'^malnutrition', malnutrition),
     (r'^deaths', deaths),
-    (r'^timemap', timeMap),
     (r'^getmessages', getMessages),
-     (r'^Media/(?P<path>.*)', 'django.views.static.serve', \
+    (r'^Media/(?P<path>.*)', 'django.views.static.serve',
      {'document_root': MEDIA_PATH}),
-)
+    )
 

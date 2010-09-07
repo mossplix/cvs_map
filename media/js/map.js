@@ -5,34 +5,36 @@
  * 
  */
 
-var points = {};  // hash to store layers with their description for each marker
-var markers= {};
+var points = {}; // hash to store layers with their description for each marker
+var markers = {};
 var infopanel;
 var start_value;
 var end_value;
 var bbox;
 var current_zoom;
-var layers={}; 
-var urls={};
-var colors=[];
+var layers = {};
+var urls = {};
+var colors = [];
 //make description global
-var description="";
+var description = "";
 
 var hf;
 
 //	function to draw simple map
 	function init() {
-
+//initialise the map object
 	map = new GMap2(document.getElementById("map"));
+//bind the map zoomed litsener ..
 	GEvent.addListener(map, 'zoomend',
 			function() {
 
 		addToMap();
 	});
+	//add map controls
 	map.addControl(new GLargeMapControl());
 	map.addControl(new GMapTypeControl());
 
-
+	//make sure the zoom fits all the points
 	var bounds = new GLatLngBounds; 
 	bounds.extend(new GLatLng(parseFloat(minLat), parseFloat(minLon))); 
 	bounds.extend(new GLatLng(parseFloat(maxLat), parseFloat(maxLon)));
@@ -42,6 +44,7 @@ var hf;
 
 }
 
+//recenter to the point that has been clicked
 function movemap(x,y) {
 	if (marker)
 	{
@@ -55,7 +58,7 @@ function movemap(x,y) {
 
 //add graph to point
 function addGraph(data,x,y,color,url,desc){
-	// map.clearOverlays();
+	//get map width and height in lat lon
 	var d=map.getBounds().toSpan();
 	var height=d.lng();
 	var width=d.lat();
@@ -65,6 +68,7 @@ function addGraph(data,x,y,color,url,desc){
 	var start=new GPoint(parseFloat(x),parseFloat(y));
 	var volume = parseInt((parseFloat(data)*100)/maxsize);
 
+//store the graph in a hash for easy lookup of the description
 	if(points[start])
 	{
 
@@ -80,7 +84,7 @@ function addGraph(data,x,y,color,url,desc){
 	}
 
 	pointpair.push(start);
-
+	//draw the graph as an overlay
 	pointpair.push(new GPoint(parseFloat(x+increment),parseFloat(y+increment)));
 	var line = new GPolyline(pointpair,color,volume);
 
@@ -97,6 +101,10 @@ function addGraph(data,x,y,color,url,desc){
 
 	map.addOverlay(line);
 }
+
+/*
+ * remove all the overlay identified by its data url
+ */
 function removeOverlays(url){
 	//make sure its not the base layer (match the begginning of base layer)
 	if (url.match(hf.split("/")[1].split("?" )[0])==null)
@@ -118,6 +126,9 @@ function removeOverlays(url){
 
 }
 
+/*
+ * given a url, draw an overlay
+ */
 function addOverlays(url){
 
 	m_list=markers[url];
@@ -132,7 +143,11 @@ function addOverlays(url){
 	}	
 }
 
-//add individual marker
+/*
+ * add a marker given the lat,lon,title icon and the data url
+ * 
+ * the data urls is to identify markers belonging to a particular overlay
+ */
 function addmarker(x,y,title,icon,url) {
 	if (icon.match("Media"))
 	{
@@ -174,7 +189,11 @@ function addmarker(x,y,title,icon,url) {
 
 }   
 
+/*
+ * add a marker that has no click lisener
+ */
 function addMarkerSimple(x,y,icon) {
+	
 	var point = new GPoint(parseFloat(x),parseFloat(y));
 	var mIcon  = new GIcon(G_DEFAULT_ICON, icon);
 
@@ -187,6 +206,9 @@ function addMarkerSimple(x,y,icon) {
 	map.addOverlay(marker); 
 }   
 
+/*
+ * initialise the time slider
+ */
 $(function(){
 
     //initialise ui slider
